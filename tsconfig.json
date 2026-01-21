@@ -1,0 +1,34 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@components/*": ["src/components/*"],
+            "@controllers/*": ["src/controllers/*"],
+            "@entities/*": ["src/entities/*"],
+            "@jobs/*": ["src/jobs/*"],
+            "@functions/*": ["src/functions/*"],
+            "@helpers/*": ["src/helpers/*"],
+            "@services/*": ["src/services/*"],
+            "@middlewares/*": ["src/middlewares/*"],
+            "@constants/*": ["src/constants/*"],
+            "@customTypes/*": ["src/types/*"],
+            "@migrations/*": ["src/migrations/*"],
+            "@routes/*": ["src/routes/*"],
+            "@utils/*": ["src/utils/*"],
+            "@/*": ["src/*"]
+        },
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "rootDir": "src",
+        "outDir": "dist",
+        "target": "es2016",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "skipLibCheck": true
+    },
+    "exclude": ["node_modules"]
+}
