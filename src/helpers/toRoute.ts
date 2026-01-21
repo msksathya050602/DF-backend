@@ -1,12 +1,16 @@
-import { RouteOptions } from '@customTypes/routeoptions';
-import { RequestHandler, Router } from 'express';
+import { RouteOptions } from "@customTypes/routeoptions";
+import { RequestHandler, Router } from "express";
 
-export function toRoute(route: Router, options: RouteOptions, middlewares?: RequestHandler[]): any {
-    const action = options.action;
+export function toRoute(
+  route: Router,
+  options: RouteOptions,
+  middlewares?: RequestHandler[],
+): any {
+  const action = options.action;
 
-    if (Array.isArray(middlewares) && middlewares.length > 0) {
-        return route[options.method](options.path, ...middlewares, action);
-    }
+  if (Array.isArray(middlewares) && middlewares.length > 0) {
+    return route[options.method](options.path, ...middlewares, action);
+  }
 
-    return route[options.method](options.path, action);
+  return route[options.method](options.path, action);
 }

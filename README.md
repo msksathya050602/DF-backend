@@ -62,17 +62,20 @@ src/
 ### Installation
 
 1. Copy this template to your project directory:
+
 ```bash
 cp -r universal-backend-template your-project-name
 cd your-project-name
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
@@ -87,11 +90,13 @@ cp .env.example .env
    - Update database connection settings in `.env`
 
 6. Run migrations:
+
 ```bash
 npm run migration:run
 ```
 
 7. Start development server:
+
 ```bash
 npm run dev
 ```
@@ -152,6 +157,7 @@ Key environment variables (see `.env.example`):
 ### Adding a New Route
 
 1. Create a controller in `src/controllers/`:
+
 ```typescript
 export class YourController extends BaseController {
     public static initialize(): YourController { ... }
@@ -160,48 +166,53 @@ export class YourController extends BaseController {
 ```
 
 2. Create a route file in `src/routes/`:
+
 ```typescript
 export default (route: Router) => {
-    const controller = YourController.initialize();
-    const routeConfig: RouteOptions[] = [
-        {
-            method: 'get',
-            path: '/your-endpoint',
-            action: controller.yourMethod.bind(controller),
-            description: 'Your endpoint description',
-            roles: ['user', 'admin'], // Empty array for public routes
-        },
-    ];
-    // ... register routes
-    return route;
+  const controller = YourController.initialize();
+  const routeConfig: RouteOptions[] = [
+    {
+      method: "get",
+      path: "/your-endpoint",
+      action: controller.yourMethod.bind(controller),
+      description: "Your endpoint description",
+      roles: ["user", "admin"], // Empty array for public routes
+    },
+  ];
+  // ... register routes
+  return route;
 };
 ```
 
 3. Register in `src/routes/v1_routes.ts`:
+
 ```typescript
-import yourRoute from './yourRoute';
-[yourRoute].forEach(callback => callback(route));
+import yourRoute from "./yourRoute";
+[yourRoute].forEach((callback) => callback(route));
 ```
 
 ### Adding a New Entity
 
 1. Create entity in `src/entities/`:
+
 ```typescript
-@Entity('your_table')
+@Entity("your_table")
 export class YourEntity extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id!: string;
-    // ... your columns
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+  // ... your columns
 }
 ```
 
 2. Register in `src/dbConfig.ts`:
+
 ```typescript
 import { YourEntity } from '@/entities/YourEntity';
 entities: [YourEntity, ...],
 ```
 
 3. Generate migration:
+
 ```bash
 npm run migration:generate -- --name=AddYourTable
 ```
@@ -209,17 +220,19 @@ npm run migration:generate -- --name=AddYourTable
 ### Adding External Service Integration
 
 1. Create service in `src/services/external/`:
+
 ```typescript
 export class YourExternalService {
-    static async fetchData() {
-        // Your integration logic
-    }
+  static async fetchData() {
+    // Your integration logic
+  }
 }
 ```
 
 2. Use in your service or controller:
+
 ```typescript
-import { YourExternalService } from '@services/external/yourExternal';
+import { YourExternalService } from "@services/external/yourExternal";
 ```
 
 ## 📚 Scripts
@@ -242,6 +255,7 @@ Add your tests in `__tests__/` directory and configure Jest in `package.json`.
 ## 📖 API Documentation
 
 Once the server is running, visit:
+
 - Local: `http://localhost:3000/api/docs`
 - Production: `http://your-domain.com/docs`
 
@@ -260,6 +274,7 @@ Once the server is running, visit:
 ### Docker (Optional)
 
 Create a `Dockerfile`:
+
 ```dockerfile
 FROM node:18-alpine
 WORKDIR /app
