@@ -1,11 +1,7 @@
 import { RouteOptions } from "@customTypes/routeoptions";
 import { RequestHandler, Router } from "express";
 
-export function toRoute(
-  route: Router,
-  options: RouteOptions,
-  middlewares?: RequestHandler[],
-): any {
+export function toRoute(route: Router, options: RouteOptions, middlewares?: RequestHandler[]): any {
   const action = options.action;
 
   if (Array.isArray(middlewares) && middlewares.length > 0) {

@@ -1,8 +1,6 @@
 import { CustomOpenAPIPath } from "@customTypes/customOpenapi";
-// Import your path definitions here
-// import { examplePaths } from './example';
+import { branchPaths } from "./branches";
 
 export const paths: CustomOpenAPIPath = {
-  // Add your paths here
-  // ...examplePaths,
+  ...branchPaths,
 };

@@ -41,11 +41,9 @@ const serverOptions: ServerConfig = {
           "[RATE LIMIT] Too many requests. Please try again later. Request IP: " +
             getClientIp(_req),
         );
-        return res
-          .status(429)
-          .json({
-            error: "[RATE LIMIT] Too many requests. Please try again later.",
-          });
+        return res.status(429).json({
+          error: "[RATE LIMIT] Too many requests. Please try again later.",
+        });
       },
       message: {
         message: "[RATE LIMIT] Too many requests, please try again later.",
@@ -98,9 +96,7 @@ const initializeApp = async () => {
     startServer();
   } catch (error: any) {
     console.error(error);
-    logger.error(
-      `[Initialization Error]: Failed to initialize - ${JSON.stringify(error)}`,
-    );
+    logger.error(`[Initialization Error]: Failed to initialize - ${JSON.stringify(error)}`);
     throw error;
   }
 };
@@ -110,8 +106,6 @@ retryWithBackoff(() => initializeApp().then(() => true), 5, 1000)
     logger.info("[Server]: Server started");
   })
   .catch((error) => {
-    logger.error(
-      `[Initialization Error]: Failed to initialize - ${JSON.stringify(error)}`,
-    );
+    logger.error(`[Initialization Error]: Failed to initialize - ${JSON.stringify(error)}`);
     process.exit(1);
   });

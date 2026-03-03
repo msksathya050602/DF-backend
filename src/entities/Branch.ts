@@ -13,13 +13,13 @@ export class Branch extends BaseEntity {
   id!: string;
 
   @Column({ type: "varchar", length: 255 })
-  name!: string;
+  branchName!: string;
 
   @Column({ type: "text", nullable: true })
-  address?: string;
+  branchAddress?: string;
 
   @Column({ type: "varchar", length: 20, nullable: true })
-  phone?: string;
+  branchPhone?: string;
 
   @Column({ type: "boolean", default: true })
   isActive!: boolean;

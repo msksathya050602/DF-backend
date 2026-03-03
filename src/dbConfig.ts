@@ -18,9 +18,7 @@ function loadCaPem(): string | undefined {
   }
   const pem = fs.readFileSync(caPath, "utf8").trim();
   if (!pem.includes("BEGIN CERTIFICATE")) {
-    throw new Error(
-      `PG SSL CA at ${caPath} is not a PEM file (missing BEGIN CERTIFICATE).`,
-    );
+    throw new Error(`PG SSL CA at ${caPath} is not a PEM file (missing BEGIN CERTIFICATE).`);
   }
   return pem;
 }
@@ -40,9 +38,8 @@ const dbConfigOptions: PostgresConnectionOptions = {
   password: CONFIG.database.password,
   database: CONFIG.database.database,
   synchronize: false,
-  ssl: ssl,
-  logging:
-    process.env.NODE_ENV === "testing" ? true : ["error", "migration", "warn"],
+  // ssl: ssl,
+
   logger: "advanced-console",
   entities: [Branch],
   migrations: [`${__dirname}/migrations/*.{js,ts}`],

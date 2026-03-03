@@ -18,20 +18,14 @@ export class BranchController extends BaseController {
     return BranchController.instance;
   }
 
-  public getAllBranches = async (
-    req: CustomRequest,
-    res: Response,
-  ): Promise<void> => {
+  public getAllBranches = async (req: CustomRequest, res: Response): Promise<void> => {
     await this.tryCall(async () => {
       const branches = await BranchService.getAllBranches();
       this.ok(res, { branches });
     });
   };
 
-  public getBranchById = async (
-    req: CustomRequest,
-    res: Response,
-  ): Promise<void> => {
+  public getBranchById = async (req: CustomRequest, res: Response): Promise<void> => {
     await this.tryCall(async () => {
       const { id } = req.params;
       const branch = await BranchService.getBranchById(id);
@@ -43,42 +37,33 @@ export class BranchController extends BaseController {
     });
   };
 
-  public createBranch = async (
-    req: CustomRequest,
-    res: Response,
-  ): Promise<void> => {
+  public createBranch = async (req: CustomRequest, res: Response): Promise<void> => {
     await this.tryCall(async () => {
-      const { name, address, phone } = req.body;
-      if (!name) {
+      const { branchName, branchAddress, branchPhone } = req.body;
+      if (!branchName) {
         this.badRequest(res, "Branch name is required");
         return;
       }
-      const branch = await BranchService.createBranch({ name, address, phone });
+      const branch = await BranchService.createBranch({ branchName, branchAddress, branchPhone });
       this.created(res, { branch });
     });
   };
 
-  public updateBranch = async (
-    req: CustomRequest,
-    res: Response,
-  ): Promise<void> => {
+  public updateBranch = async (req: CustomRequest, res: Response): Promise<void> => {
     await this.tryCall(async () => {
       const { id } = req.params;
-      const { name, address, phone, isActive } = req.body;
+      const { branchName, branchAddress, branchPhone, isActive } = req.body;
       const branch = await BranchService.updateBranch(id, {
-        name,
-        address,
-        phone,
+        branchName,
+        branchAddress,
+        branchPhone,
         isActive,
       });
       this.ok(res, { branch });
     });
   };
 
-  public deleteBranch = async (
-    req: CustomRequest,
-    res: Response,
-  ): Promise<void> => {
+  public deleteBranch = async (req: CustomRequest, res: Response): Promise<void> => {
     await this.tryCall(async () => {
       const { id } = req.params;
       await BranchService.deleteBranch(id);

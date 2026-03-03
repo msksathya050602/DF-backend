@@ -7,8 +7,7 @@ import { fetchHealthcheck } from "./healthCheck";
 
 export async function healthStatusChecker() {
   const initializeDatabase = Database.initialize(dbSource);
-  const isDbAvailable =
-    initializeDatabase.isDbAvailable.bind(initializeDatabase);
+  const isDbAvailable = initializeDatabase.isDbAvailable.bind(initializeDatabase);
   const [result] = await Promise.all([
     fetchHealthcheck({
       applicationName: APPLICATION_NAME,

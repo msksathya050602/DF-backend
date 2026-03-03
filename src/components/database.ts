@@ -39,9 +39,7 @@ export class Database implements IDatabase {
         this._isConnected = this.db.isInitialized;
         this.logger.info(`[Database]: Database connection established`);
       } catch (err) {
-        this.logger.error(
-          `[Database]: Error while connecting to database ${JSON.stringify(err)}`,
-        );
+        this.logger.error(`[Database]: Error while connecting to database ${JSON.stringify(err)}`);
         throw err;
       }
     } else {
@@ -65,9 +63,7 @@ export class Database implements IDatabase {
       await this.db.query("SELECT 1");
       return true;
     } catch (err) {
-      this.logger.error(
-        `[Database]: Error while connecting to database ${JSON.stringify(err)}`,
-      );
+      this.logger.error(`[Database]: Error while connecting to database ${JSON.stringify(err)}`);
       return false;
     }
   }

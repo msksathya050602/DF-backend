@@ -33,30 +33,26 @@ export default (route: Router) => {
       path: "/branches",
       action: createBranch,
       description: "Create a new branch",
-      roles: ["admin"], // Protected route
+      roles: [], // Protected route
     },
     {
       method: "put",
       path: "/branches/:id",
       action: updateBranch,
       description: "Update branch",
-      roles: ["admin"], // Protected route
+      roles: [], // Protected route
     },
     {
       method: "delete",
       path: "/branches/:id",
       action: deleteBranch,
       description: "Delete branch (soft delete)",
-      roles: ["admin"], // Protected route
+      roles: [], // Protected route
     },
   ];
 
   branchRoutes.forEach((routeConfig) => {
-    toRoute(route, routeConfig, [
-      setRoles(routeConfig.roles),
-      authorization,
-      routeConfig.action,
-    ]);
+    toRoute(route, routeConfig, [setRoles(routeConfig.roles), authorization, routeConfig.action]);
   });
 
   return route;

@@ -17,13 +17,11 @@ export const globalErrorHandler = (
       JSON.stringify({ error_code: status, error_message: message }),
       req.headers["x-correlation-id"] as string,
     );
-    res
-      .status(status)
-      .json({
-        error_code: status,
-        error_message: message,
-        ip: clientIp || "unknownIP",
-      });
+    res.status(status).json({
+      error_code: status,
+      error_message: message,
+      ip: clientIp || "unknownIP",
+    });
   } catch (err) {
     next(err);
   }

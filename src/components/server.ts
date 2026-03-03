@@ -1,13 +1,7 @@
 import { createTerminus } from "@godaddy/terminus";
 import cookieParser from "cookie-parser";
 import cors, { CorsOptions } from "cors";
-import express, {
-  Express,
-  NextFunction,
-  Request,
-  Response,
-  Router,
-} from "express";
+import express, { Express, NextFunction, Request, Response, Router } from "express";
 import { Options as RateLimitOptions, rateLimit } from "express-rate-limit";
 import helmet from "helmet";
 import http from "http";
@@ -49,12 +43,7 @@ export type ServerConfig = {
   APPLICATION_NAME: string;
   logger: Logger;
   defaultPort: number;
-  errorHandler?: (
-    err: CustomError,
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => void;
+  errorHandler?: (err: CustomError, req: Request, res: Response, next: NextFunction) => void;
   terminusOptions?: TerminusOptions;
   middlewares: MiddlewareConfig;
   routeConfig: RouteConfig[];
@@ -147,19 +136,12 @@ export class Server implements IServer {
 
     if (Array.isArray(middlewareConfig?.additional)) {
       this.logger.info(`[Middleware]: Additional middlewares enabled`);
-      middlewareConfig.additional.forEach((middleware) =>
-        this.app.use(middleware),
-      );
+      middlewareConfig.additional.forEach((middleware) => this.app.use(middleware));
     }
   }
 
   private enableHandleError(
-    errorHandler?: (
-      err: CustomError,
-      req: Request,
-      res: Response,
-      next: NextFunction,
-    ) => void,
+    errorHandler?: (err: CustomError, req: Request, res: Response, next: NextFunction) => void,
   ) {
     if (errorHandler) {
       this.app.use(errorHandler);

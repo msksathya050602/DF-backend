@@ -13,14 +13,14 @@ export class BranchService {
   }
 
   static async createBranch(data: {
-    name: string;
-    address?: string;
-    phone?: string;
+    branchName: string  ;
+    branchAddress?: string;
+    branchPhone?: string;
   }): Promise<Branch> {
     const branch = Branch.create({
-      name: data.name,
-      address: data.address,
-      phone: data.phone,
+      branchName: data.branchName,
+      branchAddress: data.branchAddress,
+      branchPhone: data.branchPhone,
       isActive: true,
     });
     return await branch.save();
@@ -29,9 +29,9 @@ export class BranchService {
   static async updateBranch(
     id: string,
     data: {
-      name?: string;
-      address?: string;
-      phone?: string;
+      branchName?: string;
+      branchAddress?: string;
+      branchPhone?: string;
       isActive?: boolean;
     },
   ): Promise<Branch> {

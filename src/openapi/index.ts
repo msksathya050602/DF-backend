@@ -8,14 +8,14 @@ const options: swaggerJsdoc.OAS3Options = {
   swaggerDefinition: {
     openapi: "3.0.0",
     info: {
-      title: "Your API Documentation",
+      title: "DF API Documentation",
       version: "1.0.0",
-      description: "Official API documentation",
+      description: "Official API documentation for the DF Backend",
     },
     servers: [
       {
-        url: "http://localhost:3000/api/v1",
-        description: "Localhost",
+        url: "http://localhost:5000/v1",
+        description: "Local Development",
       },
       // Add more servers as needed
     ],

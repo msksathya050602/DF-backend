@@ -27,12 +27,11 @@ export const VERSION1 = "/v1";
 export const DATABASE_URL = process.env.DATABASE_URL || "";
 
 export const isLocal = process.env.NODE_ENV === "local";
-export const isTesting = process.env.NODE_ENV === "testing";
+export const isDev = process.env.NODE_ENV === "dev";
 export const isProduction = process.env.NODE_ENV === "production";
 
 // Add your environment variables here
-export const JWT_KEYS: Readonly<Record<"access" | "refresh", string>> =
-  Object.freeze({
-    access: process.env.ACCESS_TOKEN_SECRET!,
-    refresh: process.env.REFRESH_TOKEN_SECRET!,
-  });
+export const JWT_KEYS: Readonly<Record<"access" | "refresh", string>> = Object.freeze({
+  access: process.env.ACCESS_TOKEN_SECRET!,
+  refresh: process.env.REFRESH_TOKEN_SECRET!,
+});

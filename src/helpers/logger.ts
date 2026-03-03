@@ -23,11 +23,7 @@ export class Logger implements LoggerInterface {
   }
 
   private initializeLogger(loggerOption: LoggerOption) {
-    const {
-      logFileName = "service",
-      logLevel = "debug",
-      dirName,
-    } = loggerOption;
+    const { logFileName = "service", logLevel = "debug", dirName } = loggerOption;
     const { json, combine, timestamp, errors } = winston.format;
     const format = combine(
       winston.format((info) => {

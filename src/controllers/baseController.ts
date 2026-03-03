@@ -15,10 +15,7 @@ export interface BaseControllerAttributes {
   ok: (res: Response, json: Record<string, any>) => void;
   accepted: (res: Response, json: Record<string, any>) => void;
   noContent: (res: Response) => void;
-  tryCall: (
-    action: () => Promise<void>,
-    onError?: (e?: any) => void,
-  ) => Promise<void>;
+  tryCall: (action: () => Promise<void>, onError?: (e?: any) => void) => Promise<void>;
   unauthorized: (res: Response, message: string) => void;
   after: (res: Response, cb: () => void | Promise<void>) => void;
   measureTimeSync<T>(action: () => T): [T, number];
@@ -32,10 +29,7 @@ export class BaseController implements BaseControllerAttributes {
     this.logger = logger;
   }
 
-  async tryCall(
-    action: () => Promise<void>,
-    onError?: (e?: any) => void,
-  ): Promise<void> {
+  async tryCall(action: () => Promise<void>, onError?: (e?: any) => void): Promise<void> {
     try {
       await action();
     } catch (err: any) {
@@ -46,24 +40,18 @@ export class BaseController implements BaseControllerAttributes {
     }
   }
 
-  public badRequest(
-    res: Response,
-    message: string,
-    options: Record<string, any> = {},
-  ) {
+  public badRequest(res: Response, message: string, options: Record<string, any> = {}) {
     this.logger.error(
       JSON.stringify({
         error_code: STATUSCODES.BAD_REQUEST,
         error_message: message,
       }),
     );
-    return res
-      .status(STATUSCODES.BAD_REQUEST)
-      .json({
-        error_code: STATUSCODES.BAD_REQUEST,
-        error_message: message,
-        ...options,
-      });
+    return res.status(STATUSCODES.BAD_REQUEST).json({
+      error_code: STATUSCODES.BAD_REQUEST,
+      error_message: message,
+      ...options,
+    });
   }
 
   public internalServerError(res: Response, message: string) {
@@ -73,32 +61,24 @@ export class BaseController implements BaseControllerAttributes {
         error_message: message,
       }),
     );
-    return res
-      .status(STATUSCODES.INTERNAL_SERVER_ERROR)
-      .json({
-        error_code: STATUSCODES.INTERNAL_SERVER_ERROR,
-        error_message: message,
-      });
+    return res.status(STATUSCODES.INTERNAL_SERVER_ERROR).json({
+      error_code: STATUSCODES.INTERNAL_SERVER_ERROR,
+      error_message: message,
+    });
   }
 
-  public notFound(
-    res: Response,
-    message: string,
-    options: Record<string, any> = {},
-  ) {
+  public notFound(res: Response, message: string, options: Record<string, any> = {}) {
     this.logger.error(
       JSON.stringify({
         error_code: STATUSCODES.NOT_FOUND,
         error_message: message,
       }),
     );
-    return res
-      .status(STATUSCODES.NOT_FOUND)
-      .json({
-        error_code: STATUSCODES.NOT_FOUND,
-        error_message: message,
-        ...options,
-      });
+    return res.status(STATUSCODES.NOT_FOUND).json({
+      error_code: STATUSCODES.NOT_FOUND,
+      error_message: message,
+      ...options,
+    });
   }
 
   public conflict(res: Response, message: string) {
@@ -165,30 +145,22 @@ export class BaseController implements BaseControllerAttributes {
     const start = moment().format("YYYY-MM-DD HH:mm:ss");
     const result = action();
     const end = moment().format("YYYY-MM-DD HH:mm:ss");
-    const duration = moment
-      .duration(moment(end).diff(moment(start)))
-      .asSeconds();
+    const duration = moment.duration(moment(end).diff(moment(start))).asSeconds();
     this.logger.debug(`Execution time: ${duration} seconds`);
     return [result, duration] as const;
   }
 
-  public async measureTimeAsync<T>(
-    action: () => Promise<T>,
-  ): Promise<[T, number]> {
+  public async measureTimeAsync<T>(action: () => Promise<T>): Promise<[T, number]> {
     const start = moment().format("YYYY-MM-DD HH:mm:ss");
     try {
       const result = await action();
       const end = moment().format("YYYY-MM-DD HH:mm:ss");
-      const duration = moment
-        .duration(moment(end).diff(moment(start)))
-        .asSeconds();
+      const duration = moment.duration(moment(end).diff(moment(start))).asSeconds();
       this.logger.debug(`Execution time: ${duration} seconds`);
       return [result, duration] as const;
     } catch (error) {
       const end = moment().format("YYYY-MM-DD HH:mm:ss");
-      const duration = moment
-        .duration(moment(end).diff(moment(start)))
-        .asSeconds();
+      const duration = moment.duration(moment(end).diff(moment(start))).asSeconds();
       this.logger.debug(`Execution time: ${duration} seconds`);
       throw error;
     }
