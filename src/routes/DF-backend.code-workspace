@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../DF-frontend"
+		},
+		{
+			"path": "../../../../sathya/Doctor_e_frontend"
+		},
+		{
+			"path": "../../../../sathya/Doctor_e_backend"
+		}
+	],
+	"settings": {}
+}

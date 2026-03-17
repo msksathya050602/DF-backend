@@ -124,4 +124,3 @@ export const components: swaggerJSDoc.Components = {
     },
   },
 };
-

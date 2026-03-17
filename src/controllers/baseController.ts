@@ -136,7 +136,7 @@ export class BaseController implements BaseControllerAttributes {
       .json({ error_code: STATUSCODES.UNAUTHORIZED, error_message: message });
   }
 
-  public after(res: Response, cb: () => void | Promise<void>) {
+  public after(_res: Response, _cb: () => void | Promise<void>) {
     this.logger.debug("executing after callback...");
     this.logger.debug("after callback executed");
   }

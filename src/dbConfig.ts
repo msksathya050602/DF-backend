@@ -5,6 +5,7 @@ import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConne
 import { CONFIG, isProduction } from "@/config";
 // Import your entities here
 import { Branch } from "@/entities/Branch";
+import { User } from "@/entities/User";
 
 function loadCaPem(): string | undefined {
   const fromEnv = process.env.PG_SSL_CA || CONFIG.database?.ssl?.capath;
@@ -41,7 +42,7 @@ const dbConfigOptions: PostgresConnectionOptions = {
   // ssl: ssl,
 
   logger: "advanced-console",
-  entities: [Branch],
+  entities: [Branch, User],
   migrations: [`${__dirname}/migrations/*.{js,ts}`],
 };
 

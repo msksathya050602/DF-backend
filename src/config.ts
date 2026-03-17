@@ -32,6 +32,15 @@ export const isProduction = process.env.NODE_ENV === "production";
 
 // Add your environment variables here
 export const JWT_KEYS: Readonly<Record<"access" | "refresh", string>> = Object.freeze({
-  access: process.env.ACCESS_TOKEN_SECRET!,
-  refresh: process.env.REFRESH_TOKEN_SECRET!,
+  access: process.env.ACCESS_TOKEN_SECRET || "df-access-token-secret-dev",
+  refresh: process.env.REFRESH_TOKEN_SECRET || "df-refresh-token-secret-dev",
 });
+
+export const TOKEN_EXPIRY: Readonly<
+  Record<"access" | "refresh", `${number}${"d" | "h" | "m" | "s"}`>
+> = Object.freeze({
+  access: "20m",
+  refresh: "24h",
+});
+
+export const REFRESH_TOKEN_MAX_AGE_MS = 24 * 60 * 60 * 1000;

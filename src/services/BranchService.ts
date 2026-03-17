@@ -13,7 +13,7 @@ export class BranchService {
   }
 
   static async createBranch(data: {
-    branchName: string  ;
+    branchName: string;
     branchAddress?: string;
     branchPhone?: string;
   }): Promise<Branch> {
