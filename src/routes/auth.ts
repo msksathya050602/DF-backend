@@ -47,7 +47,7 @@ export default (route: Router) => {
       path: "/users/me",
       action: getMe,
       description: "Get current user",
-      roles: ["user"],
+      roles: ["user", "admin"],
     },
   ];
 
