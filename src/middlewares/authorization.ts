@@ -11,8 +11,7 @@ export function authorization(req: CustomRequest, res: Response, next: NextFunct
   try {
     // For public routes (no roles), still check for token to set req.user for optional authentication
     if (!req.roles || req.roles.length === 0) {
-      const access_token =
-        req.headers.authorization || req.query.accessToken || req.cookies?.accessToken;
+      const access_token = req.headers.authorization || req.query.accessToken || req.cookies?.accessToken;
       const JWT_SECRET = JWT_KEYS["access"];
 
       // If token is provided, verify and set req.user (optional authentication)
@@ -33,8 +32,7 @@ export function authorization(req: CustomRequest, res: Response, next: NextFunct
       }
     } else {
       // For protected routes (with roles), require valid authentication
-      const access_token =
-        req.headers.authorization || req.query.accessToken || req.cookies?.accessToken;
+      const access_token = req.headers.authorization || req.query.accessToken || req.cookies?.accessToken;
       const JWT_SECRET = JWT_KEYS["access"];
 
       if (access_token && typeof access_token === "string") {
@@ -47,17 +45,12 @@ export function authorization(req: CustomRequest, res: Response, next: NextFunct
             req.user = Object.freeze({ email, roles, userId });
             if (req.roles) {
               const rolesArray = Array.isArray(roles) ? roles : [roles];
-              const hasRequiredRole = req.roles.some((requiredRole) =>
-                rolesArray.includes(requiredRole),
-              );
+              const hasRequiredRole = req.roles.some((requiredRole) => rolesArray.includes(requiredRole));
 
               if (hasRequiredRole) {
                 next();
               } else {
-                throw new CustomError(
-                  "Required Role is missing for Authorization",
-                  STATUSCODES.UNAUTHORIZED,
-                );
+                throw new CustomError("Required Role is missing for Authorization", STATUSCODES.UNAUTHORIZED);
               }
             }
           }

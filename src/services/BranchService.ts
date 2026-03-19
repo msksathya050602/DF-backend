@@ -12,11 +12,7 @@ export class BranchService {
     return await Branch.findOne({ where: { id } });
   }
 
-  static async createBranch(data: {
-    branchName: string;
-    branchAddress?: string;
-    branchPhone?: string;
-  }): Promise<Branch> {
+  static async createBranch(data: { branchName: string; branchAddress?: string; branchPhone?: string }): Promise<Branch> {
     const branch = Branch.create({
       branchName: data.branchName,
       branchAddress: data.branchAddress,

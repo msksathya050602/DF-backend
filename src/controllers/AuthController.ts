@@ -40,11 +40,7 @@ export class AuthController extends BaseController {
         return this.unauthorized(res, "Invalid email or password");
       }
 
-      const [accessToken, refreshToken] = await this.authService.generateToken(
-        user.userId,
-        user.email,
-        user.roles,
-      );
+      const [accessToken, refreshToken] = await this.authService.generateToken(user.userId, user.email, user.roles);
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -91,11 +87,7 @@ export class AuthController extends BaseController {
         roles: ["user"],
       });
 
-      const [accessToken, refreshToken] = await this.authService.generateToken(
-        user.id,
-        user.email,
-        user.roles || ["user"],
-      );
+      const [accessToken, refreshToken] = await this.authService.generateToken(user.id, user.email, user.roles || ["user"]);
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -125,11 +117,7 @@ export class AuthController extends BaseController {
       }
 
       const decoded = await this.authService.verifyJwt(refreshToken, "refresh");
-      const [accessToken] = await this.authService.generateToken(
-        decoded.userId,
-        decoded.email,
-        decoded.roles || [],
-      );
+      const [accessToken] = await this.authService.generateToken(decoded.userId, decoded.email, decoded.roles || []);
 
       return this.ok(res, {
         status: STATUSCODES.OK,

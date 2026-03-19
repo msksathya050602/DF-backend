@@ -63,11 +63,7 @@ export class OrderController extends BaseController {
     }
   };
 
-  public updateOrderStatus = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public updateOrderStatus = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid order ID is required")]);
       const { orderStatus } = req.body as { orderStatus?: OrderStatus };
@@ -84,11 +80,7 @@ export class OrderController extends BaseController {
     }
   };
 
-  public updatePaymentStatus = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public updatePaymentStatus = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid order ID is required")]);
       const { paymentStatus } = req.body as { paymentStatus?: PaymentStatus };
@@ -105,11 +97,7 @@ export class OrderController extends BaseController {
     }
   };
 
-  public updateOrderItemStatus = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public updateOrderItemStatus = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid order item ID is required")]);
       const { itemStatus } = req.body as { itemStatus?: OrderItemStatus };

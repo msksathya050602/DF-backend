@@ -153,10 +153,7 @@ export class OrderService {
     return this.getOrderById(id);
   }
 
-  static async updateOrderItemStatus(
-    id: string,
-    itemStatus: OrderItemStatus,
-  ): Promise<OrderItem | null> {
+  static async updateOrderItemStatus(id: string, itemStatus: OrderItemStatus): Promise<OrderItem | null> {
     const item = await OrderItem.findOne({
       where: { id },
       relations: ["product", "service", "order"],

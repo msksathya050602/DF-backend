@@ -34,10 +34,9 @@ export class Logger implements LoggerInterface {
       errors({ stack: true }),
       json(),
     );
-    const transports: (
-      | winston.transports.ConsoleTransportInstance
-      | winston.transports.FileTransportInstance
-    )[] = [new winston.transports.Console()];
+    const transports: (winston.transports.ConsoleTransportInstance | winston.transports.FileTransportInstance)[] = [
+      new winston.transports.Console(),
+    ];
     const writeFile = new winston.transports.File({
       filename: `${logFileName}.log`,
       level: logLevel,

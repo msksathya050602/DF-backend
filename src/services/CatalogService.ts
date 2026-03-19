@@ -53,11 +53,7 @@ export class CatalogService {
     return Product.findOne({ where: { id }, relations: ["category"] });
   }
 
-  static async createProduct(data: {
-    categoryId: string;
-    productName: string;
-    productCode: string;
-  }): Promise<Product> {
+  static async createProduct(data: { categoryId: string; productName: string; productCode: string }): Promise<Product> {
     const product = Product.create({
       categoryId: data.categoryId,
       productName: data.productName.trim(),

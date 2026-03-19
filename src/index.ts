@@ -26,8 +26,7 @@ const serverOptions: ServerConfig = {
       preflightContinue: false,
       optionsSuccessStatus: 204,
       credentials: true,
-      allowedHeaders:
-        "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-access-token, X-Filename",
+      allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-access-token, X-Filename",
     },
     rateLimit: {
       windowMs: 2 * 60 * 1000,
@@ -37,10 +36,7 @@ const serverOptions: ServerConfig = {
       keyGenerator: (req: any) => req.ip,
       skip: (req) => req.method === "OPTIONS" || req.path === "/health",
       handler: (_req, res) => {
-        logger.error(
-          "[RATE LIMIT] Too many requests. Please try again later. Request IP: " +
-            getClientIp(_req),
-        );
+        logger.error("[RATE LIMIT] Too many requests. Please try again later. Request IP: " + getClientIp(_req));
         return res.status(429).json({
           error: "[RATE LIMIT] Too many requests. Please try again later.",
         });

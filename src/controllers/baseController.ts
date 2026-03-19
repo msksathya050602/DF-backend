@@ -88,9 +88,7 @@ export class BaseController implements BaseControllerAttributes {
         error_message: message,
       }),
     );
-    return res
-      .status(STATUSCODES.CONFLICT)
-      .json({ error_code: STATUSCODES.CONFLICT, error_message: message });
+    return res.status(STATUSCODES.CONFLICT).json({ error_code: STATUSCODES.CONFLICT, error_message: message });
   }
 
   public forbidden(res: Response, message: string) {
@@ -100,9 +98,7 @@ export class BaseController implements BaseControllerAttributes {
         error_message: message,
       }),
     );
-    return res
-      .status(STATUSCODES.FORBIDDEN)
-      .json({ error_code: STATUSCODES.FORBIDDEN, error_message: message });
+    return res.status(STATUSCODES.FORBIDDEN).json({ error_code: STATUSCODES.FORBIDDEN, error_message: message });
   }
 
   public created<T extends Record<string, any>>(res: Response, json: T) {
@@ -131,9 +127,7 @@ export class BaseController implements BaseControllerAttributes {
         error_message: message,
       }),
     );
-    return res
-      .status(STATUSCODES.UNAUTHORIZED)
-      .json({ error_code: STATUSCODES.UNAUTHORIZED, error_message: message });
+    return res.status(STATUSCODES.UNAUTHORIZED).json({ error_code: STATUSCODES.UNAUTHORIZED, error_message: message });
   }
 
   public after(_res: Response, _cb: () => void | Promise<void>) {

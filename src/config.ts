@@ -36,9 +36,7 @@ export const JWT_KEYS: Readonly<Record<"access" | "refresh", string>> = Object.f
   refresh: process.env.REFRESH_TOKEN_SECRET || "df-refresh-token-secret-dev",
 });
 
-export const TOKEN_EXPIRY: Readonly<
-  Record<"access" | "refresh", `${number}${"d" | "h" | "m" | "s"}`>
-> = Object.freeze({
+export const TOKEN_EXPIRY: Readonly<Record<"access" | "refresh", `${number}${"d" | "h" | "m" | "s"}`>> = Object.freeze({
   access: "20m",
   refresh: "24h",
 });

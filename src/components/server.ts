@@ -107,9 +107,7 @@ export class Server implements IServer {
       this.logger.info(`[Rate Limit]: Trust proxy enabled`);
       this.app.set("trust proxy", 2);
 
-      this.logger.info(
-        `[Rate Limit]: Rate-limiter enabled with options: ${JSON.stringify(middlewareConfig.rateLimit)}`,
-      );
+      this.logger.info(`[Rate Limit]: Rate-limiter enabled with options: ${JSON.stringify(middlewareConfig.rateLimit)}`);
       const limiter = rateLimit({
         windowMs: middlewareConfig.rateLimit.windowMs || 15 * 60 * 1000,
         max: middlewareConfig.rateLimit.max || 100,
@@ -140,9 +138,7 @@ export class Server implements IServer {
     }
   }
 
-  private enableHandleError(
-    errorHandler?: (err: CustomError, req: Request, res: Response, next: NextFunction) => void,
-  ) {
+  private enableHandleError(errorHandler?: (err: CustomError, req: Request, res: Response, next: NextFunction) => void) {
     if (errorHandler) {
       this.app.use(errorHandler);
     }

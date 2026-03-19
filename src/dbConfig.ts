@@ -32,11 +32,7 @@ function loadCaPem(): string | undefined {
 }
 
 const caPem = isProduction ? loadCaPem() : undefined;
-const ssl = isProduction
-  ? caPem
-    ? { ca: caPem, rejectUnauthorized: true }
-    : { rejectUnauthorized: true }
-  : false;
+const ssl = isProduction ? (caPem ? { ca: caPem, rejectUnauthorized: true } : { rejectUnauthorized: true }) : false;
 
 const dbConfigOptions: PostgresConnectionOptions = {
   type: "postgres",

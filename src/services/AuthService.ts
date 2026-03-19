@@ -31,9 +31,7 @@ export class AuthService {
     }
 
     const isHashedPassword = user.password.startsWith("$2");
-    const isPasswordValid = isHashedPassword
-      ? await comparePassword(password, user.password)
-      : password === user.password;
+    const isPasswordValid = isHashedPassword ? await comparePassword(password, user.password) : password === user.password;
 
     if (!isPasswordValid) {
       return null;

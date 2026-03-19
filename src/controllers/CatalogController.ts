@@ -29,11 +29,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public getCategoryById = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public getCategoryById = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid category ID is required")]);
       const category = await CatalogService.getCategoryById(req.params.id);
@@ -46,11 +42,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public createCategory = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public createCategory = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [
         body("categoryName").isString().trim().notEmpty().withMessage("Category name is required"),
@@ -64,11 +56,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public updateCategory = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public updateCategory = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [
         param("id").isUUID().withMessage("Valid category ID is required"),
@@ -86,11 +74,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public deleteCategory = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public deleteCategory = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid category ID is required")]);
       const deleted = await CatalogService.deleteCategory(req.params.id);
@@ -112,11 +96,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public getProductById = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public getProductById = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid product ID is required")]);
       const product = await CatalogService.getProductById(req.params.id);
@@ -129,11 +109,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public createProduct = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public createProduct = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [
         body("categoryId").isUUID().withMessage("Valid category ID is required"),
@@ -148,11 +124,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public updateProduct = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public updateProduct = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [
         param("id").isUUID().withMessage("Valid product ID is required"),
@@ -171,11 +143,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public deleteProduct = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public deleteProduct = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid product ID is required")]);
       const deleted = await CatalogService.deleteProduct(req.params.id);
@@ -197,11 +165,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public getServiceById = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public getServiceById = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid service ID is required")]);
       const service = await CatalogService.getServiceById(req.params.id);
@@ -214,11 +178,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public createService = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public createService = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [
         body("serviceName").isString().trim().notEmpty().withMessage("Service name is required"),
@@ -232,11 +192,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public updateService = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public updateService = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [
         param("id").isUUID().withMessage("Valid service ID is required"),
@@ -254,11 +210,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public deleteService = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public deleteService = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid service ID is required")]);
       const deleted = await CatalogService.deleteService(req.params.id);
@@ -280,11 +232,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public getPricingById = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public getPricingById = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid pricing ID is required")]);
       const pricing = await CatalogService.getPricingById(req.params.id);
@@ -297,11 +245,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public createPricing = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public createPricing = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [
         body("productId").isUUID().withMessage("Valid product ID is required"),
@@ -317,11 +261,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public updatePricing = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public updatePricing = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [
         param("id").isUUID().withMessage("Valid pricing ID is required"),
@@ -341,11 +281,7 @@ export class CatalogController extends BaseController {
     }
   };
 
-  public deletePricing = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+  public deletePricing = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
       await validateRequest(req, [param("id").isUUID().withMessage("Valid pricing ID is required")]);
       const deleted = await CatalogService.deletePricing(req.params.id);
@@ -358,4 +294,3 @@ export class CatalogController extends BaseController {
     }
   };
 }
- 
