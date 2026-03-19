@@ -9,5 +9,13 @@ export const tags: Tag[] = [
     name: "Branches",
     description: "Endpoints for managing branches",
   },
+  {
+    name: "Catalog",
+    description: "Endpoints for categories, products, services, and pricing",
+  },
+  {
+    name: "Orders",
+    description: "Endpoints for creating and managing orders and order items",
+  },
   // Add more tags as needed
 ];

@@ -7,6 +7,8 @@ import { CONFIG, isProduction } from "@/config";
 import { Branch } from "@/entities/Branch";
 import { Category } from "@/entities/Category";
 import { Customer } from "@/entities/Customer";
+import { Order } from "@/entities/Order";
+import { OrderItem } from "@/entities/OrderItem";
 import { Pricing } from "@/entities/Pricing";
 import { Product } from "@/entities/Product";
 import { Service } from "@/entities/Service";
@@ -47,7 +49,7 @@ const dbConfigOptions: PostgresConnectionOptions = {
   // ssl: ssl,
 
   logger: "advanced-console",
-  entities: [Branch, User, Customer, Category, Product, Service, Pricing],
+  entities: [Branch, User, Customer, Category, Product, Service, Pricing, Order, OrderItem],
   migrations: [`${__dirname}/migrations/*.{js,ts}`],
 };
 
