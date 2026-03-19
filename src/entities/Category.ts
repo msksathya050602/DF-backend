@@ -2,6 +2,12 @@ import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGenerat
 
 import { Product } from "./Product";
 
+export const CATEGORY_NAMES = ["Hotel", "Household"] as const;
+export const CATEGORY_CODES = ["HOTEL", "HOUSEHOLD"] as const;
+
+export type CategoryName = (typeof CATEGORY_NAMES)[number];
+export type CategoryCode = (typeof CATEGORY_CODES)[number];
+
 @Entity("categories")
 export class Category extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")

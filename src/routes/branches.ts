@@ -19,35 +19,35 @@ export default (route: Router) => {
       path: "/branches",
       action: getAllBranches,
       description: "Get all branches",
-      roles: [], // Public route
+      roles: ['user', 'admin'], // Public route
     },
     {
       method: "get",
       path: "/branches/:id",
       action: getBranchById,
       description: "Get branch by ID",
-      roles: [], // Public route
+      roles: ['user', 'admin'], // Public route
     },
     {
       method: "post",
       path: "/branches",
       action: createBranch,
       description: "Create a new branch",
-      roles: [], // Protected route
+      roles: ['admin'], // Protected route
     },
     {
       method: "put",
       path: "/branches/:id",
       action: updateBranch,
       description: "Update branch",
-      roles: [], // Protected route
+      roles: ['admin'], // Protected route
     },
     {
       method: "delete",
       path: "/branches/:id",
       action: deleteBranch,
       description: "Delete branch (soft delete)",
-      roles: [], // Protected route
+      roles: ['admin'], // Protected route
     },
   ];
 

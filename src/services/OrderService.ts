@@ -23,7 +23,8 @@ export type CreateOrderInput = {
   notes?: string;
 };
 
-const round2 = (value: number) => Number(value.toFixed(2));
+const round2 = (value: number | string | undefined | null): number =>
+  Number(Number(value ?? 0).toFixed(2));
 
 const generateOrderNumber = () => {
   const now = new Date();
@@ -38,7 +39,7 @@ export class OrderService {
   static async getAllOrders(): Promise<Order[]> {
     return Order.find({
       where: { isActive: true },
-      relations: ["customer", "branch", "items", "items.product", "items.service"],
+      relations: ["customer", "branch", "items", "items.product", "items.product.category", "items.service"],
       order: { createdAt: "DESC" },
     });
   }
@@ -46,7 +47,15 @@ export class OrderService {
   static async getOrderById(id: string): Promise<Order | null> {
     return Order.findOne({
       where: { id },
-      relations: ["customer", "branch", "items", "items.product", "items.service"],
+      relations: ["customer", "branch", "items", "items.product", "items.product.category", "items.service"],
+    });
+  }
+
+  static async getOrdersByCustomerId(customerId: string): Promise<Order[]> {
+    return Order.find({
+      where: { customerId, isActive: true },
+      relations: ["customer", "branch", "items", "items.product", "items.product.category", "items.service"],
+      order: { createdAt: "DESC" },
     });
   }
 
@@ -77,8 +86,8 @@ export class OrderService {
         orderStatus: OrderStatus.CREATED,
         paymentStatus: PaymentStatus.PENDING,
         subTotal: 0,
-        discountAmount: round2(Math.max(0, data.discountAmount || 0)),
-        taxAmount: round2(Math.max(0, data.taxAmount || 0)),
+        discountAmount: round2(Math.max(0, Number(data.discountAmount) || 0)),
+        taxAmount: round2(Math.max(0, Number(data.taxAmount) || 0)),
         totalAmount: 0,
         pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
         deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : undefined,
@@ -106,8 +115,8 @@ export class OrderService {
           throw new Error(`Pricing not found for product ${item.productId} and service ${item.serviceId}`);
         }
 
-        const unitPrice = round2(Number(pricing.price));
-        const lineTotal = round2(unitPrice * item.quantity);
+        const unitPrice = round2(pricing.price);
+        const lineTotal = round2(unitPrice * Number(item.quantity));
         subTotal += lineTotal;
 
         const orderItem = manager.create(OrderItem, {
@@ -124,7 +133,9 @@ export class OrderService {
       }
 
       savedOrder.subTotal = round2(subTotal);
-      savedOrder.totalAmount = round2(subTotal - savedOrder.discountAmount + savedOrder.taxAmount);
+      savedOrder.totalAmount = round2(
+        subTotal - Number(savedOrder.discountAmount) + Number(savedOrder.taxAmount),
+      );
       await manager.save(savedOrder);
 
       return savedOrder;

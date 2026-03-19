@@ -14,7 +14,7 @@ const options: swaggerJsdoc.OAS3Options = {
     },
     servers: [
       {
-        url: "http://localhost:5000/v1",
+        url: "http://localhost:5001/v1",
         description: "Local Development",
       },
       // Add more servers as needed

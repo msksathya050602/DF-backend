@@ -6,8 +6,9 @@ export const branchPaths: CustomOpenAPIPath = {
     get: {
       tags: ["Branches"],
       summary: "Get all branches",
-      description: "Returns a list of all branches.",
+      description: "Returns a list of all branches. Allowed roles: user, admin.",
       operationId: "getAllBranches",
+      security: [{ bearerAuth: [] }],
       responses: {
         [STATUSCODES.OK]: {
           description: "List of branches retrieved successfully",
@@ -33,14 +34,31 @@ export const branchPaths: CustomOpenAPIPath = {
             },
           },
         },
+        [STATUSCODES.UNAUTHORIZED]: {
+          description: "Authorization required",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+        [STATUSCODES.FORBIDDEN]: {
+          description: "Required role is missing for authorization",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
       },
     },
 
     post: {
       tags: ["Branches"],
       summary: "Create a new branch",
-      description: "Creates a new branch record.",
+      description: "Creates a new branch record. Allowed roles: admin.",
       operationId: "createBranch",
+      security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
         content: {
@@ -84,6 +102,22 @@ export const branchPaths: CustomOpenAPIPath = {
             },
           },
         },
+        [STATUSCODES.UNAUTHORIZED]: {
+          description: "Authorization required",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+        [STATUSCODES.FORBIDDEN]: {
+          description: "Required role is missing for authorization",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
       },
     },
   },
@@ -92,8 +126,9 @@ export const branchPaths: CustomOpenAPIPath = {
     get: {
       tags: ["Branches"],
       summary: "Get a branch by ID",
-      description: "Returns a single branch by its UUID.",
+      description: "Returns a single branch by its UUID. Allowed roles: user, admin.",
       operationId: "getBranchById",
+      security: [{ bearerAuth: [] }],
       parameters: [
         {
           name: "id",
@@ -133,14 +168,31 @@ export const branchPaths: CustomOpenAPIPath = {
             },
           },
         },
+        [STATUSCODES.UNAUTHORIZED]: {
+          description: "Authorization required",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+        [STATUSCODES.FORBIDDEN]: {
+          description: "Required role is missing for authorization",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
       },
     },
 
     put: {
       tags: ["Branches"],
       summary: "Update a branch",
-      description: "Updates an existing branch by its UUID.",
+      description: "Updates an existing branch by its UUID. Allowed roles: admin.",
       operationId: "updateBranch",
+      security: [{ bearerAuth: [] }],
       parameters: [
         {
           name: "id",
@@ -194,14 +246,31 @@ export const branchPaths: CustomOpenAPIPath = {
             },
           },
         },
+        [STATUSCODES.UNAUTHORIZED]: {
+          description: "Authorization required",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+        [STATUSCODES.FORBIDDEN]: {
+          description: "Required role is missing for authorization",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
       },
     },
 
     delete: {
       tags: ["Branches"],
       summary: "Delete a branch",
-      description: "Soft-deletes a branch by its UUID (sets isActive to false).",
+      description: "Soft-deletes a branch by its UUID (sets isActive to false). Allowed roles: admin.",
       operationId: "deleteBranch",
+      security: [{ bearerAuth: [] }],
       parameters: [
         {
           name: "id",
@@ -238,6 +307,22 @@ export const branchPaths: CustomOpenAPIPath = {
         },
         [STATUSCODES.INTERNAL_SERVER_ERROR]: {
           description: "Internal server error",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+        [STATUSCODES.UNAUTHORIZED]: {
+          description: "Authorization required",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
+        [STATUSCODES.FORBIDDEN]: {
+          description: "Required role is missing for authorization",
           content: {
             "application/json": {
               schema: { $ref: "#/components/schemas/ErrorResponse" },
