@@ -1,7 +1,9 @@
 import { CustomRequest } from "@customTypes/customRequest";
 import { CatalogService } from "@services/CatalogService";
-import { Response } from "express";
+import { NextFunction, Response } from "express";
+import { body, param } from "express-validator";
 
+import { validateRequest } from "../helpers/validateRequest";
 import { BaseController } from "./baseController";
 
 export class CatalogController extends BaseController {
@@ -18,212 +20,342 @@ export class CatalogController extends BaseController {
     return CatalogController.instance;
   }
 
-  public getAllCategories = async (_req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public getAllCategories = async (_req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    try {
       const categories = await CatalogService.getAllCategories();
-      this.ok(res, { categories });
-    });
+      return this.ok(res, { categories });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public getCategoryById = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public getCategoryById = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [param("id").isUUID().withMessage("Valid category ID is required")]);
       const category = await CatalogService.getCategoryById(req.params.id);
       if (!category) {
-        this.notFound(res, "Category not found");
-        return;
+        return this.notFound(res, "Category not found");
       }
-      this.ok(res, { category });
-    });
+      return this.ok(res, { category });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public createCategory = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public createCategory = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [
+        body("categoryName").isString().trim().notEmpty().withMessage("Category name is required"),
+        body("categoryCode").isString().trim().notEmpty().withMessage("Category code is required"),
+      ]);
       const { categoryName, categoryCode } = req.body;
-      if (!categoryName || !categoryCode) {
-        this.badRequest(res, "Category name and category code are required");
-        return;
-      }
       const category = await CatalogService.createCategory({ categoryName, categoryCode });
-      this.created(res, { category });
-    });
+      return this.created(res, { category });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public updateCategory = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public updateCategory = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [
+        param("id").isUUID().withMessage("Valid category ID is required"),
+        body("categoryName").optional().isString().trim().notEmpty(),
+        body("categoryCode").optional().isString().trim().notEmpty(),
+        body("isActive").optional().isBoolean(),
+      ]);
       const category = await CatalogService.updateCategory(req.params.id, req.body);
       if (!category) {
-        this.notFound(res, "Category not found");
-        return;
+        return this.notFound(res, "Category not found");
       }
-      this.ok(res, { category });
-    });
+      return this.ok(res, { category });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public deleteCategory = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public deleteCategory = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [param("id").isUUID().withMessage("Valid category ID is required")]);
       const deleted = await CatalogService.deleteCategory(req.params.id);
       if (!deleted) {
-        this.notFound(res, "Category not found");
-        return;
+        return this.notFound(res, "Category not found");
       }
-      this.ok(res, { message: "Category deleted successfully" });
-    });
+      return this.ok(res, { message: "Category deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public getAllProducts = async (_req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public getAllProducts = async (_req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    try {
       const products = await CatalogService.getAllProducts();
-      this.ok(res, { products });
-    });
+      return this.ok(res, { products });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public getProductById = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public getProductById = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [param("id").isUUID().withMessage("Valid product ID is required")]);
       const product = await CatalogService.getProductById(req.params.id);
       if (!product) {
-        this.notFound(res, "Product not found");
-        return;
+        return this.notFound(res, "Product not found");
       }
-      this.ok(res, { product });
-    });
+      return this.ok(res, { product });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public createProduct = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public createProduct = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [
+        body("categoryId").isUUID().withMessage("Valid category ID is required"),
+        body("productName").isString().trim().notEmpty().withMessage("Product name is required"),
+        body("productCode").isString().trim().notEmpty().withMessage("Product code is required"),
+      ]);
       const { categoryId, productName, productCode } = req.body;
-      if (!categoryId || !productName || !productCode) {
-        this.badRequest(res, "Category ID, product name and product code are required");
-        return;
-      }
       const product = await CatalogService.createProduct({ categoryId, productName, productCode });
-      this.created(res, { product });
-    });
+      return this.created(res, { product });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public updateProduct = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public updateProduct = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [
+        param("id").isUUID().withMessage("Valid product ID is required"),
+        body("categoryId").optional().isUUID(),
+        body("productName").optional().isString().trim().notEmpty(),
+        body("productCode").optional().isString().trim().notEmpty(),
+        body("isActive").optional().isBoolean(),
+      ]);
       const product = await CatalogService.updateProduct(req.params.id, req.body);
       if (!product) {
-        this.notFound(res, "Product not found");
-        return;
+        return this.notFound(res, "Product not found");
       }
-      this.ok(res, { product });
-    });
+      return this.ok(res, { product });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public deleteProduct = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public deleteProduct = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [param("id").isUUID().withMessage("Valid product ID is required")]);
       const deleted = await CatalogService.deleteProduct(req.params.id);
       if (!deleted) {
-        this.notFound(res, "Product not found");
-        return;
+        return this.notFound(res, "Product not found");
       }
-      this.ok(res, { message: "Product deleted successfully" });
-    });
+      return this.ok(res, { message: "Product deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public getAllServices = async (_req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public getAllServices = async (_req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    try {
       const services = await CatalogService.getAllServices();
-      this.ok(res, { services });
-    });
+      return this.ok(res, { services });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public getServiceById = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public getServiceById = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [param("id").isUUID().withMessage("Valid service ID is required")]);
       const service = await CatalogService.getServiceById(req.params.id);
       if (!service) {
-        this.notFound(res, "Service not found");
-        return;
+        return this.notFound(res, "Service not found");
       }
-      this.ok(res, { service });
-    });
+      return this.ok(res, { service });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public createService = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public createService = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [
+        body("serviceName").isString().trim().notEmpty().withMessage("Service name is required"),
+        body("serviceCode").isString().trim().notEmpty().withMessage("Service code is required"),
+      ]);
       const { serviceName, serviceCode } = req.body;
-      if (!serviceName || !serviceCode) {
-        this.badRequest(res, "Service name and service code are required");
-        return;
-      }
       const service = await CatalogService.createService({ serviceName, serviceCode });
-      this.created(res, { service });
-    });
+      return this.created(res, { service });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public updateService = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public updateService = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [
+        param("id").isUUID().withMessage("Valid service ID is required"),
+        body("serviceName").optional().isString().trim().notEmpty(),
+        body("serviceCode").optional().isString().trim().notEmpty(),
+        body("isActive").optional().isBoolean(),
+      ]);
       const service = await CatalogService.updateService(req.params.id, req.body);
       if (!service) {
-        this.notFound(res, "Service not found");
-        return;
+        return this.notFound(res, "Service not found");
       }
-      this.ok(res, { service });
-    });
+      return this.ok(res, { service });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public deleteService = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public deleteService = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [param("id").isUUID().withMessage("Valid service ID is required")]);
       const deleted = await CatalogService.deleteService(req.params.id);
       if (!deleted) {
-        this.notFound(res, "Service not found");
-        return;
+        return this.notFound(res, "Service not found");
       }
-      this.ok(res, { message: "Service deleted successfully" });
-    });
+      return this.ok(res, { message: "Service deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public getAllPricing = async (_req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public getAllPricing = async (_req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    try {
       const pricing = await CatalogService.getAllPricing();
-      this.ok(res, { pricing });
-    });
+      return this.ok(res, { pricing });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public getPricingById = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public getPricingById = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [param("id").isUUID().withMessage("Valid pricing ID is required")]);
       const pricing = await CatalogService.getPricingById(req.params.id);
       if (!pricing) {
-        this.notFound(res, "Pricing not found");
-        return;
+        return this.notFound(res, "Pricing not found");
       }
-      this.ok(res, { pricing });
-    });
+      return this.ok(res, { pricing });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public createPricing = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public createPricing = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [
+        body("productId").isUUID().withMessage("Valid product ID is required"),
+        body("serviceId").isUUID().withMessage("Valid service ID is required"),
+        body("price").isFloat({ min: 0 }).withMessage("Price must be a non-negative number"),
+        body("currency").optional().isString().trim().isLength({ min: 1, max: 8 }),
+      ]);
       const { productId, serviceId, price, currency } = req.body;
-      if (!productId || !serviceId || typeof price !== "number") {
-        this.badRequest(res, "Product ID, service ID and numeric price are required");
-        return;
-      }
       const pricing = await CatalogService.createPricing({ productId, serviceId, price, currency });
-      this.created(res, { pricing });
-    });
+      return this.created(res, { pricing });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public updatePricing = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public updatePricing = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [
+        param("id").isUUID().withMessage("Valid pricing ID is required"),
+        body("productId").optional().isUUID(),
+        body("serviceId").optional().isUUID(),
+        body("price").optional().isFloat({ min: 0 }),
+        body("currency").optional().isString().trim().isLength({ min: 1, max: 8 }),
+        body("isActive").optional().isBoolean(),
+      ]);
       const pricing = await CatalogService.updatePricing(req.params.id, req.body);
       if (!pricing) {
-        this.notFound(res, "Pricing not found");
-        return;
+        return this.notFound(res, "Pricing not found");
       }
-      this.ok(res, { pricing });
-    });
+      return this.ok(res, { pricing });
+    } catch (error) {
+      next(error);
+    }
   };
 
-  public deletePricing = async (req: CustomRequest, res: Response): Promise<void> => {
-    await this.tryCall(async () => {
+  public deletePricing = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<any> => {
+    try {
+      await validateRequest(req, [param("id").isUUID().withMessage("Valid pricing ID is required")]);
       const deleted = await CatalogService.deletePricing(req.params.id);
       if (!deleted) {
-        this.notFound(res, "Pricing not found");
-        return;
+        return this.notFound(res, "Pricing not found");
       }
-      this.ok(res, { message: "Pricing deleted successfully" });
-    });
+      return this.ok(res, { message: "Pricing deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
   };
 }
  
