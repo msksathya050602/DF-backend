@@ -5,6 +5,11 @@ import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConne
 import { CONFIG, isProduction } from "@/config";
 // Import your entities here
 import { Branch } from "@/entities/Branch";
+import { Category } from "@/entities/Category";
+import { Customer } from "@/entities/Customer";
+import { Pricing } from "@/entities/Pricing";
+import { Product } from "@/entities/Product";
+import { Service } from "@/entities/Service";
 import { User } from "@/entities/User";
 
 function loadCaPem(): string | undefined {
@@ -42,7 +47,7 @@ const dbConfigOptions: PostgresConnectionOptions = {
   // ssl: ssl,
 
   logger: "advanced-console",
-  entities: [Branch, User],
+  entities: [Branch, User, Customer, Category, Product, Service, Pricing],
   migrations: [`${__dirname}/migrations/*.{js,ts}`],
 };
 

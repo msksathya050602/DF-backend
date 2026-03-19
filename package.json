@@ -14,7 +14,7 @@
     "format:check": "prettier --check \"{src,scripts,__tests__,.}/**/*.{ts,tsx}\" \"**/*.ts\"  \"**/*.json\" \"README.md\" ",
     "format:fix": "prettier --write \"{src,scripts,__tests__,.}/**/*.{ts,tsx}\" \"**/*.ts\"  \"**/*.json\" \"README.md\" ",
     "typeorm": "cross-env NODE_ENV=local ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli -d src/dbConfig.ts",
-    "migration:generate": "npm run typeorm -- migration:generate ./src/migrations/MigrationName",
+    "migration:generate": "npm run typeorm -- migration:generate ./src/migrations/customer-migration",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert"
   },
