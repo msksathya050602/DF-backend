@@ -21,10 +21,9 @@ export const catalogPaths: CustomOpenAPIPath = {
           "application/json": {
             schema: {
               type: "object",
-              required: ["categoryName", "categoryCode"],
+              required: ["categoryName"],
               properties: {
                 categoryName: { type: "string", example: "Regular" },
-                categoryCode: { type: "string", example: "REGULAR" },
               },
             },
           },
@@ -82,11 +81,10 @@ export const catalogPaths: CustomOpenAPIPath = {
           "application/json": {
             schema: {
               type: "object",
-              required: ["categoryId", "productName", "productCode"],
+              required: ["categoryId", "productName"],
               properties: {
                 categoryId: { type: "string", example: "uuid" },
                 productName: { type: "string", example: "SHIRT" },
-                productCode: { type: "string", example: "SHIRT" },
               },
             },
           },

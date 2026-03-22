@@ -46,10 +46,9 @@ export class CatalogController extends BaseController {
     try {
       await validateRequest(req, [
         body("categoryName").isString().trim().notEmpty().withMessage("Category name is required"),
-        body("categoryCode").isString().trim().notEmpty().withMessage("Category code is required"),
       ]);
-      const { categoryName, categoryCode } = req.body;
-      const category = await CatalogService.createCategory({ categoryName, categoryCode });
+      const { categoryName } = req.body;
+      const category = await CatalogService.createCategory({ categoryName });
       return this.created(res, { category });
     } catch (error) {
       next(error);
@@ -61,7 +60,6 @@ export class CatalogController extends BaseController {
       await validateRequest(req, [
         param("id").isUUID().withMessage("Valid category ID is required"),
         body("categoryName").optional().isString().trim().notEmpty(),
-        body("categoryCode").optional().isString().trim().notEmpty(),
         body("isActive").optional().isBoolean(),
       ]);
       const category = await CatalogService.updateCategory(req.params.id, req.body);
@@ -114,10 +112,9 @@ export class CatalogController extends BaseController {
       await validateRequest(req, [
         body("categoryId").isUUID().withMessage("Valid category ID is required"),
         body("productName").isString().trim().notEmpty().withMessage("Product name is required"),
-        body("productCode").isString().trim().notEmpty().withMessage("Product code is required"),
       ]);
-      const { categoryId, productName, productCode } = req.body;
-      const product = await CatalogService.createProduct({ categoryId, productName, productCode });
+      const { categoryId, productName } = req.body;
+      const product = await CatalogService.createProduct({ categoryId, productName });
       return this.created(res, { product });
     } catch (error) {
       next(error);
@@ -130,7 +127,6 @@ export class CatalogController extends BaseController {
         param("id").isUUID().withMessage("Valid product ID is required"),
         body("categoryId").optional().isUUID(),
         body("productName").optional().isString().trim().notEmpty(),
-        body("productCode").optional().isString().trim().notEmpty(),
         body("isActive").optional().isBoolean(),
       ]);
       const product = await CatalogService.updateProduct(req.params.id, req.body);
@@ -180,12 +176,9 @@ export class CatalogController extends BaseController {
 
   public createService = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
-      await validateRequest(req, [
-        body("serviceName").isString().trim().notEmpty().withMessage("Service name is required"),
-        body("serviceCode").isString().trim().notEmpty().withMessage("Service code is required"),
-      ]);
-      const { serviceName, serviceCode } = req.body;
-      const service = await CatalogService.createService({ serviceName, serviceCode });
+      await validateRequest(req, [body("serviceName").isString().trim().notEmpty().withMessage("Service name is required")]);
+      const { serviceName } = req.body;
+      const service = await CatalogService.createService({ serviceName });
       return this.created(res, { service });
     } catch (error) {
       next(error);
@@ -197,7 +190,6 @@ export class CatalogController extends BaseController {
       await validateRequest(req, [
         param("id").isUUID().withMessage("Valid service ID is required"),
         body("serviceName").optional().isString().trim().notEmpty(),
-        body("serviceCode").optional().isString().trim().notEmpty(),
         body("isActive").optional().isBoolean(),
       ]);
       const service = await CatalogService.updateService(req.params.id, req.body);

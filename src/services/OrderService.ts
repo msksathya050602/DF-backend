@@ -23,8 +23,7 @@ export type CreateOrderInput = {
   notes?: string;
 };
 
-const round2 = (value: number | string | undefined | null): number =>
-  Number(Number(value ?? 0).toFixed(2));
+const round2 = (value: number | string | undefined | null): number => Number(Number(value ?? 0).toFixed(2));
 
 const generateOrderNumber = () => {
   const now = new Date();
@@ -133,9 +132,7 @@ export class OrderService {
       }
 
       savedOrder.subTotal = round2(subTotal);
-      savedOrder.totalAmount = round2(
-        subTotal - Number(savedOrder.discountAmount) + Number(savedOrder.taxAmount),
-      );
+      savedOrder.totalAmount = round2(subTotal - Number(savedOrder.discountAmount) + Number(savedOrder.taxAmount));
       await manager.save(savedOrder);
 
       return savedOrder;

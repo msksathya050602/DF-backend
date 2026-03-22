@@ -4,6 +4,64 @@ import { Product } from "@/entities/Product";
 import { Service } from "@/entities/Service";
 
 export class CatalogService {
+  private static readonly MAX_CODE_ATTEMPTS = 10_000;
+
+  private static toCode(name: string): string {
+    const base = name
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    return base || "ITEM";
+  }
+
+  /**
+   * Picks first available code: BASE, BASE_2, BASE_3, … (bounded loop for ESLint + safety).
+   */
+  private static async allocateUniqueCode(options: {
+    base: string;
+    findExisting: (code: string) => Promise<{ id: string } | null>;
+    excludeId?: string;
+  }): Promise<string> {
+    const { base, findExisting, excludeId } = options;
+    let code = base;
+    let suffix = 2;
+    for (let attempt = 0; attempt < this.MAX_CODE_ATTEMPTS; attempt += 1) {
+      const existing = await findExisting(code);
+      if (!existing || existing.id === excludeId) return code;
+      code = `${base}_${suffix}`;
+      suffix += 1;
+    }
+    throw new Error(`Unable to allocate unique code for base "${base}"`);
+  }
+
+  private static async uniqueCategoryCode(name: string, excludeId?: string): Promise<string> {
+    const base = this.toCode(name);
+    return this.allocateUniqueCode({
+      base,
+      excludeId,
+      findExisting: (code) => Category.findOne({ where: { categoryCode: code } }),
+    });
+  }
+
+  private static async uniqueProductCode(name: string, excludeId?: string): Promise<string> {
+    const base = this.toCode(name);
+    return this.allocateUniqueCode({
+      base,
+      excludeId,
+      findExisting: (code) => Product.findOne({ where: { productCode: code } }),
+    });
+  }
+
+  private static async uniqueServiceCode(name: string, excludeId?: string): Promise<string> {
+    const base = this.toCode(name);
+    return this.allocateUniqueCode({
+      base,
+      excludeId,
+      findExisting: (code) => Service.findOne({ where: { serviceCode: code } }),
+    });
+  }
+
   static async getAllCategories(): Promise<Category[]> {
     return Category.find({ where: { isActive: true }, order: { createdAt: "DESC" } });
   }
@@ -12,10 +70,12 @@ export class CatalogService {
     return Category.findOne({ where: { id } });
   }
 
-  static async createCategory(data: { categoryName: string; categoryCode: string }): Promise<Category> {
+  static async createCategory(data: { categoryName: string }): Promise<Category> {
+    const categoryName = data.categoryName.trim();
+    const categoryCode = await this.uniqueCategoryCode(categoryName);
     const category = Category.create({
-      categoryName: data.categoryName.trim(),
-      categoryCode: data.categoryCode.trim().toUpperCase(),
+      categoryName,
+      categoryCode,
       isActive: true,
     });
     return category.save();
@@ -23,12 +83,14 @@ export class CatalogService {
 
   static async updateCategory(
     id: string,
-    data: Partial<{ categoryName: string; categoryCode: string; isActive: boolean }>,
+    data: Partial<{ categoryName: string; isActive: boolean }>,
   ): Promise<Category | null> {
     const category = await this.getCategoryById(id);
     if (!category) return null;
-    if (typeof data.categoryName === "string") category.categoryName = data.categoryName.trim();
-    if (typeof data.categoryCode === "string") category.categoryCode = data.categoryCode.trim().toUpperCase();
+    if (typeof data.categoryName === "string") {
+      category.categoryName = data.categoryName.trim();
+      category.categoryCode = await this.uniqueCategoryCode(category.categoryName, id);
+    }
     if (typeof data.isActive === "boolean") category.isActive = data.isActive;
     return category.save();
   }
@@ -53,11 +115,13 @@ export class CatalogService {
     return Product.findOne({ where: { id }, relations: ["category"] });
   }
 
-  static async createProduct(data: { categoryId: string; productName: string; productCode: string }): Promise<Product> {
+  static async createProduct(data: { categoryId: string; productName: string }): Promise<Product> {
+    const productName = data.productName.trim();
+    const productCode = await this.uniqueProductCode(productName);
     const product = Product.create({
       categoryId: data.categoryId,
-      productName: data.productName.trim(),
-      productCode: data.productCode.trim().toUpperCase(),
+      productName,
+      productCode,
       isActive: true,
     });
     return product.save();
@@ -68,15 +132,16 @@ export class CatalogService {
     data: Partial<{
       categoryId: string;
       productName: string;
-      productCode: string;
       isActive: boolean;
     }>,
   ): Promise<Product | null> {
     const product = await this.getProductById(id);
     if (!product) return null;
     if (typeof data.categoryId === "string") product.categoryId = data.categoryId;
-    if (typeof data.productName === "string") product.productName = data.productName.trim();
-    if (typeof data.productCode === "string") product.productCode = data.productCode.trim().toUpperCase();
+    if (typeof data.productName === "string") {
+      product.productName = data.productName.trim();
+      product.productCode = await this.uniqueProductCode(product.productName, id);
+    }
     if (typeof data.isActive === "boolean") product.isActive = data.isActive;
     return product.save();
   }
@@ -97,10 +162,12 @@ export class CatalogService {
     return Service.findOne({ where: { id } });
   }
 
-  static async createService(data: { serviceName: string; serviceCode: string }): Promise<Service> {
+  static async createService(data: { serviceName: string }): Promise<Service> {
+    const serviceName = data.serviceName.trim();
+    const serviceCode = await this.uniqueServiceCode(serviceName);
     const service = Service.create({
-      serviceName: data.serviceName.trim(),
-      serviceCode: data.serviceCode.trim().toUpperCase(),
+      serviceName,
+      serviceCode,
       isActive: true,
     });
     return service.save();
@@ -108,12 +175,14 @@ export class CatalogService {
 
   static async updateService(
     id: string,
-    data: Partial<{ serviceName: string; serviceCode: string; isActive: boolean }>,
+    data: Partial<{ serviceName: string; isActive: boolean }>,
   ): Promise<Service | null> {
     const service = await this.getServiceById(id);
     if (!service) return null;
-    if (typeof data.serviceName === "string") service.serviceName = data.serviceName.trim();
-    if (typeof data.serviceCode === "string") service.serviceCode = data.serviceCode.trim().toUpperCase();
+    if (typeof data.serviceName === "string") {
+      service.serviceName = data.serviceName.trim();
+      service.serviceCode = await this.uniqueServiceCode(service.serviceName, id);
+    }
     if (typeof data.isActive === "boolean") service.isActive = data.isActive;
     return service.save();
   }
