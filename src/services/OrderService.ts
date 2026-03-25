@@ -19,7 +19,9 @@ export type CreateOrderInput = {
   discountAmount?: number;
   taxAmount?: number;
   pickupDate?: string;
+  /** Stored as `Order.deliveryDate`; alias for API clarity */
   deliveryDate?: string;
+  expectedDeliveryDate?: string;
   notes?: string;
 };
 
@@ -88,8 +90,11 @@ export class OrderService {
         discountAmount: round2(Math.max(0, Number(data.discountAmount) || 0)),
         taxAmount: round2(Math.max(0, Number(data.taxAmount) || 0)),
         totalAmount: 0,
-        pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
-        deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : undefined,
+        pickupDate: data.pickupDate?.trim() ? new Date(data.pickupDate) : undefined,
+        deliveryDate: (() => {
+          const raw = (data.expectedDeliveryDate ?? data.deliveryDate)?.trim();
+          return raw ? new Date(raw) : undefined;
+        })(),
         notes: data.notes,
         isActive: true,
       });

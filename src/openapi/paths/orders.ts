@@ -28,6 +28,19 @@ export const orderPaths: CustomOpenAPIPath = {
                 discountAmount: { type: "number", example: 0 },
                 taxAmount: { type: "number", example: 0 },
                 notes: { type: "string", example: "Handle with care" },
+                pickupDate: { type: "string", format: "date-time", example: "2025-03-26T09:00:00.000Z" },
+                deliveryDate: {
+                  type: "string",
+                  format: "date-time",
+                  description: "Expected delivery datetime (same as expectedDeliveryDate if both sent, expectedDeliveryDate wins)",
+                  example: "2025-03-28T17:00:00.000Z",
+                },
+                expectedDeliveryDate: {
+                  type: "string",
+                  format: "date-time",
+                  description: "Preferred field for expected delivery; persisted as deliveryDate",
+                  example: "2025-03-28T17:00:00.000Z",
+                },
                 items: {
                   type: "array",
                   items: {

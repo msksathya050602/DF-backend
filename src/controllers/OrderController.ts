@@ -55,6 +55,16 @@ export class OrderController extends BaseController {
         body("items.*.quantity").isInt({ min: 1 }).withMessage("Quantity must be a positive integer"),
         body("discountAmount").optional().isFloat({ min: 0 }),
         body("taxAmount").optional().isFloat({ min: 0 }),
+        body("pickupDate").optional({ values: "falsy" }).isISO8601().withMessage("pickupDate must be a valid ISO 8601 date"),
+        body("deliveryDate")
+          .optional({ values: "falsy" })
+          .isISO8601()
+          .withMessage("deliveryDate must be a valid ISO 8601 date"),
+        body("expectedDeliveryDate")
+          .optional({ values: "falsy" })
+          .isISO8601()
+          .withMessage("expectedDeliveryDate must be a valid ISO 8601 date"),
+        body("notes").optional().isString().trim(),
       ]);
       const order = await OrderService.createOrder(req.body);
       return this.created(res, { order });
