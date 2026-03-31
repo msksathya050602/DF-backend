@@ -9,7 +9,6 @@ export type CreateCustomerInput = {
 };
 
 export class CustomerService {
-
     private static instance: CustomerService;
 
     public static initialize() {
