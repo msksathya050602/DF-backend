@@ -22,16 +22,16 @@ export class OrderController extends BaseController {
         return OrderController.instance;
     }
 
-    public getAllOrders = async (_req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async getAllOrders(_req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             const orders = await OrderService.getAllOrders();
             return this.ok(res, { orders });
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public getOrderById = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async getOrderById(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid order ID is required')]);
             const order = await OrderService.getOrderById(req.params.id);
@@ -42,9 +42,9 @@ export class OrderController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public createOrder = async (req: CustomRequest, res: Response, _next: NextFunction): Promise<any> => {
+    public async createOrder(req: CustomRequest, res: Response, _next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [
                 body('customerId').isUUID().withMessage('Valid customerId is required'),
@@ -65,9 +65,9 @@ export class OrderController extends BaseController {
         } catch (error: any) {
             return this.badRequest(res, error?.message || 'Failed to create order');
         }
-    };
+    }
 
-    public updateOrderStatus = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async updateOrderStatus(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid order ID is required')]);
             const { orderStatus } = req.body as { orderStatus?: OrderStatus };
@@ -82,9 +82,9 @@ export class OrderController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public updatePaymentStatus = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async updatePaymentStatus(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid order ID is required')]);
             const { paymentStatus } = req.body as { paymentStatus?: PaymentStatus };
@@ -99,9 +99,9 @@ export class OrderController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public updateOrderItemStatus = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async updateOrderItemStatus(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid order item ID is required')]);
             const { itemStatus } = req.body as { itemStatus?: OrderItemStatus };
@@ -116,9 +116,9 @@ export class OrderController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public cancelOrder = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async cancelOrder(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid order ID is required')]);
             const order = await OrderService.cancelOrder(req.params.id);
@@ -129,5 +129,5 @@ export class OrderController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 }

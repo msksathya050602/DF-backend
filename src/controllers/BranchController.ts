@@ -20,16 +20,16 @@ export class BranchController extends BaseController {
         return BranchController.instance;
     }
 
-    public getAllBranches = async (req: CustomRequest, res: Response): Promise<any> => {
+    public async getAllBranches(req: CustomRequest, res: Response): Promise<any> {
         try {
             const branches = await BranchService.getAllBranches();
             return this.ok(res, { branches });
         } catch (error) {
             return this.internalServerError(res, (error as Error)?.message || 'Failed to fetch branches');
         }
-    };
+    }
 
-    public getBranchById = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async getBranchById(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid branch ID is required')]);
             const { id } = req.params;
@@ -41,9 +41,9 @@ export class BranchController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public createBranch = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async createBranch(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [
                 body('branchName').isString().trim().notEmpty().withMessage('Branch name is required'),
@@ -56,9 +56,9 @@ export class BranchController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public updateBranch = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async updateBranch(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [
                 param('id').isUUID().withMessage('Valid branch ID is required'),
@@ -79,9 +79,9 @@ export class BranchController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public deleteBranch = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async deleteBranch(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid branch ID is required')]);
             const { id } = req.params;
@@ -90,5 +90,5 @@ export class BranchController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 }

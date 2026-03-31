@@ -21,16 +21,16 @@ export class CustomerController extends BaseController {
         return CustomerController.instance;
     }
 
-    public getAllCustomers = async (req: CustomRequest, res: Response): Promise<any> => {
+    public async getAllCustomers(req: CustomRequest, res: Response): Promise<any> {
         try {
             const customers = await CustomerService.getAllCustomers();
             return this.ok(res, { customers });
         } catch (error) {
             return this.internalServerError(res, (error as Error)?.message || 'Failed to fetch customers');
         }
-    };
+    }
 
-    public getCustomerById = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async getCustomerById(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid customer ID is required')]);
             const { id } = req.params;
@@ -42,9 +42,9 @@ export class CustomerController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public getCustomerOrders = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async getCustomerOrders(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [param('id').isUUID().withMessage('Valid customer ID is required')]);
             const { id } = req.params;
@@ -57,9 +57,9 @@ export class CustomerController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
-    public createCustomer = async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+    public async createCustomer(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             await validateRequest(req, [
                 body('firstName').isString().trim().notEmpty().withMessage('First name is required'),
@@ -80,5 +80,5 @@ export class CustomerController extends BaseController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 }

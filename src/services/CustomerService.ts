@@ -9,6 +9,16 @@ export type CreateCustomerInput = {
 };
 
 export class CustomerService {
+
+    private static instance: CustomerService;
+
+    public static initialize() {
+        if (!CustomerService.instance) {
+            CustomerService.instance = new CustomerService();
+        }
+        return CustomerService.instance;
+    }
+
     static async getAllCustomers(): Promise<Customer[]> {
         return await Customer.find({
             where: { isActive: true },
