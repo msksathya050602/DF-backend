@@ -1,5 +1,5 @@
 export type CustomOpenAPIPath = {
-  [path: string]: {
-    [method: string]: any;
-  };
+    [path: string]: {
+        [method: string]: any;
+    };
 };

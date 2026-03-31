@@ -82,12 +82,12 @@ cp .env.example .env
 ```
 
 4. Update `src/config.ts`:
-   - Change `APPLICATION_NAME` to your app name
-   - Add your custom configuration
+    - Change `APPLICATION_NAME` to your app name
+    - Add your custom configuration
 
 5. Configure database:
-   - Update `src/dbConfig.ts` with your entities
-   - Update database connection settings in `.env`
+    - Update `src/dbConfig.ts` with your entities
+    - Update database connection settings in `.env`
 
 6. Run migrations:
 
@@ -169,26 +169,26 @@ export class YourController extends BaseController {
 
 ```typescript
 export default (route: Router) => {
-  const controller = YourController.initialize();
-  const routeConfig: RouteOptions[] = [
-    {
-      method: "get",
-      path: "/your-endpoint",
-      action: controller.yourMethod.bind(controller),
-      description: "Your endpoint description",
-      roles: ["user", "admin"], // Empty array for public routes
-    },
-  ];
-  // ... register routes
-  return route;
+    const controller = YourController.initialize();
+    const routeConfig: RouteOptions[] = [
+        {
+            method: 'get',
+            path: '/your-endpoint',
+            action: controller.yourMethod.bind(controller),
+            description: 'Your endpoint description',
+            roles: ['user', 'admin'], // Empty array for public routes
+        },
+    ];
+    // ... register routes
+    return route;
 };
 ```
 
 3. Register in `src/routes/v1_routes.ts`:
 
 ```typescript
-import yourRoute from "./yourRoute";
-[yourRoute].forEach((callback) => callback(route));
+import yourRoute from './yourRoute';
+[yourRoute].forEach(callback => callback(route));
 ```
 
 ### Adding a New Entity
@@ -196,11 +196,11 @@ import yourRoute from "./yourRoute";
 1. Create entity in `src/entities/`:
 
 ```typescript
-@Entity("your_table")
+@Entity('your_table')
 export class YourEntity extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string;
-  // ... your columns
+    @PrimaryGeneratedColumn('uuid')
+    id!: string;
+    // ... your columns
 }
 ```
 
@@ -223,16 +223,16 @@ npm run migration:generate -- --name=AddYourTable
 
 ```typescript
 export class YourExternalService {
-  static async fetchData() {
-    // Your integration logic
-  }
+    static async fetchData() {
+        // Your integration logic
+    }
 }
 ```
 
 2. Use in your service or controller:
 
 ```typescript
-import { YourExternalService } from "@services/external/yourExternal";
+import { YourExternalService } from '@services/external/yourExternal';
 ```
 
 ## 📚 Scripts
