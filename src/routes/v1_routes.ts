@@ -4,12 +4,13 @@ import auth from './auth';
 import branches from './branches';
 import catalog from './catalog';
 import customers from './customers';
+import deliveries from './deliveries';
 import orders from './orders';
 
 const route = Router();
 
 export default function Routes() {
-    [auth, branches, catalog, customers, orders].forEach(callback => {
+    [auth, branches, catalog, customers, deliveries, orders].forEach(callback => {
         callback(route);
     });
     return route;

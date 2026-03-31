@@ -2,7 +2,7 @@ import { CustomRequest } from '@customTypes/customRequest';
 import { CustomerService } from '@services/CustomerService';
 import { OrderService } from '@services/OrderService';
 import { NextFunction, Response } from 'express';
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 import { validateRequest } from '../helpers/validateRequest';
 import { BaseController } from './baseController';
@@ -77,6 +77,21 @@ export class CustomerController extends BaseController {
                 customerAddress,
             });
             return this.created(res, { customer });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    public async searchCustomersByPhone(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
+        try {
+            await validateRequest(req, [
+                query('phone').isString().trim().isLength({ min: 2 }).withMessage('Phone must be at least 2 digits'),
+                query('limit').optional().isInt({ min: 1, max: 20 }).withMessage('Limit must be between 1 and 20'),
+            ]);
+            const phone = String(req.query.phone).trim();
+            const limit = req.query.limit ? Number(req.query.limit) : 10;
+            const customers = await CustomerService.searchCustomersByPhone(phone, limit);
+            return this.ok(res, { customers, count: customers.length });
         } catch (error) {
             next(error);
         }

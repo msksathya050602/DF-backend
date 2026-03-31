@@ -1,3 +1,5 @@
+import { Between, Not } from 'typeorm';
+
 import { dbSource } from '@/dbConfig';
 import { Branch } from '@/entities/Branch';
 import { Customer } from '@/entities/Customer';
@@ -15,6 +17,8 @@ type CreateOrderItemInput = {
 export type CreateOrderInput = {
     customerId: string;
     branchId: string;
+    /** User id (uuid) of staff who created / owns the order; stored as `Order.handledBy` text. */
+    handledByUserId?: string;
     items: CreateOrderItemInput[];
     discountAmount?: number;
     taxAmount?: number;
@@ -60,6 +64,24 @@ export class OrderService {
         });
     }
 
+    /** Active orders with `deliveryDate` on the current calendar day (server local time), excluding cancelled. */
+    static async getTodayDeliveryOrders(): Promise<Order[]> {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        return Order.find({
+            where: {
+                isActive: true,
+                deliveryDate: Between(start, end),
+                orderStatus: Not(OrderStatus.CANCELLED),
+            },
+            relations: ['customer', 'branch', 'items', 'items.product', 'items.product.category', 'items.service'],
+            order: { deliveryDate: 'ASC', createdAt: 'DESC' },
+        });
+    }
+
     static async createOrder(data: CreateOrderInput): Promise<Order> {
         if (!Array.isArray(data.items) || data.items.length === 0) {
             throw new Error('Order must contain at least one item');
@@ -84,6 +106,7 @@ export class OrderService {
                 orderNumber: generateOrderNumber(),
                 customerId: data.customerId,
                 branchId: data.branchId,
+                handledBy: data.handledByUserId,
                 orderStatus: OrderStatus.CREATED,
                 paymentStatus: PaymentStatus.PENDING,
                 subTotal: 0,
@@ -181,6 +204,14 @@ export class OrderService {
         if (!order) return null;
         order.orderStatus = OrderStatus.CANCELLED;
         order.isActive = false;
+        await order.save();
+        return this.getOrderById(id);
+    }
+
+    static async assignOrderHandler(id: string, handledBy: string): Promise<Order | null> {
+        const order = await this.getOrderById(id);
+        if (!order) return null;
+        order.handledBy = handledBy;
         await order.save();
         return this.getOrderById(id);
     }

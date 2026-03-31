@@ -32,6 +32,9 @@ export class Order extends BaseEntity {
     @Column({ name: 'branch_id', type: 'uuid' })
     branchId!: string;
 
+    @Column({ name: 'handled_by', type: 'text', nullable: true })
+    handledBy?: string;
+
     @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.CREATED })
     orderStatus!: OrderStatus;
 
