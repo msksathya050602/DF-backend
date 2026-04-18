@@ -188,6 +188,7 @@ export class Server implements IServer {
     public start() {
         this.server.listen(this.port, () => {
             this.logger.info(`[Server]: Running on port ${this.port}`);
+            this.logger.info(`[Server]: Environment: ${process.env.NODE_ENV}`);
         });
     }
 

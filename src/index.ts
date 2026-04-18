@@ -21,7 +21,7 @@ const serverOptions: ServerConfig = {
     defaultPort: Number(CONFIG.server.port) || 3000,
     middlewares: {
         cors: {
-            origin: 'http://localhost:3000',
+            origin: '*',
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             preflightContinue: false,
             optionsSuccessStatus: 204,
