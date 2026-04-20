@@ -61,7 +61,7 @@ export class Logger implements LoggerInterface {
 const loggerOption: LoggerOption = {
     logFileName: 'service',
     logLevel: 'debug',
-    // ...(!isLocal && { dirName: '/app/logs' }),
+    ...(!isLocal && { dirName: '/app/logs' }),
 };
 const logger = new Logger(loggerOption);
 

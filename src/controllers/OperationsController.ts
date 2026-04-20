@@ -21,9 +21,10 @@ export class OperationsController extends BaseController {
         return OperationsController.instance;
     }
 
-    public async getTodayDeliveryOrders(_req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
+    public async getTodayDeliveryOrders(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
-            const orders = await OrderService.getTodayDeliveryOrders();
+            const branchId = typeof req.query?.branchId === 'string' && req.query.branchId.trim() ? req.query.branchId.trim() : undefined;
+            const orders = await OrderService.getTodayDeliveryOrders(branchId);
             return this.ok(res, {
                 orders,
                 count: orders.length,

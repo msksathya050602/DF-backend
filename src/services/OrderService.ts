@@ -64,18 +64,21 @@ export class OrderService {
         });
     }
 
-    /** Active orders with `deliveryDate` on the current calendar day (server local time), excluding cancelled. */
-    static async getTodayDeliveryOrders(): Promise<Order[]> {
+    /** Active orders with `deliveryDate` on the current calendar day (server local time), excluding cancelled. Optionally scoped to one branch. */
+    static async getTodayDeliveryOrders(branchId?: string): Promise<Order[]> {
         const start = new Date();
         start.setHours(0, 0, 0, 0);
         const end = new Date();
         end.setHours(23, 59, 59, 999);
+
+        const trimmed = typeof branchId === 'string' ? branchId.trim() : '';
 
         return Order.find({
             where: {
                 isActive: true,
                 deliveryDate: Between(start, end),
                 orderStatus: Not(OrderStatus.CANCELLED),
+                ...(trimmed ? { branchId: trimmed } : {}),
             },
             relations: ['customer', 'branch', 'items', 'items.product', 'items.product.category', 'items.service'],
             order: { deliveryDate: 'ASC', createdAt: 'DESC' },
