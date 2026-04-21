@@ -61,6 +61,7 @@ export class OrderController extends BaseController {
                 body('notes').optional().isString().trim(),
             ]);
             const order = await OrderService.createOrder(req.body);
+            await new Promise<void>(resolve => setTimeout(resolve, 2000));
             return this.created(res, { order });
         } catch (error: any) {
             return this.badRequest(res, error?.message || 'Failed to create order');
