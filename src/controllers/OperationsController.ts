@@ -2,7 +2,7 @@ import { CustomRequest } from '@customTypes/customRequest';
 import { OrderStatus, PaymentStatus } from '@entities/Order';
 import { OrderService } from '@services/OrderService';
 import { NextFunction, Response } from 'express';
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 import { validateRequest } from '../helpers/validateRequest';
 import { BaseController } from './baseController';
@@ -23,8 +23,20 @@ export class OperationsController extends BaseController {
 
     public async getTodayDeliveryOrders(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
+            await validateRequest(req, [
+                query('date')
+                    .optional({ values: 'falsy' })
+                    .matches(/^\d{4}-\d{2}-\d{2}$/)
+                    .withMessage('date must be YYYY-MM-DD'),
+            ]);
             const branchId = typeof req.query?.branchId === 'string' && req.query.branchId.trim() ? req.query.branchId.trim() : undefined;
-            const orders = await OrderService.getTodayDeliveryOrders(branchId);
+            const dateRaw = typeof req.query?.date === 'string' ? req.query.date.trim() : '';
+            let day = new Date();
+            if (dateRaw) {
+                const [y, m, d] = dateRaw.split('-').map(Number);
+                day = new Date(y, m - 1, d);
+            }
+            const orders = await OrderService.getDeliveryOrdersForCalendarDay(day, branchId);
             return this.ok(res, {
                 orders,
                 count: orders.length,

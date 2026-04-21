@@ -1,4 +1,4 @@
-import { Between, Not } from 'typeorm';
+import { Between, In, Not } from 'typeorm';
 
 import { dbSource } from '@/dbConfig';
 import { Branch } from '@/entities/Branch';
@@ -6,6 +6,7 @@ import { Customer } from '@/entities/Customer';
 import { Order, OrderStatus, PaymentStatus } from '@/entities/Order';
 import { OrderItem, OrderItemStatus } from '@/entities/OrderItem';
 import { Pricing } from '@/entities/Pricing';
+import { CustomerService } from '@/services/CustomerService';
 
 type CreateOrderItemInput = {
     productId: string;
@@ -64,11 +65,29 @@ export class OrderService {
         });
     }
 
-    /** Active orders with `deliveryDate` on the current calendar day (server local time), excluding cancelled. Optionally scoped to one branch. */
-    static async getTodayDeliveryOrders(branchId?: string): Promise<Order[]> {
-        const start = new Date();
+    /** Match customers by phone substring (digits), then return those customers and all their active orders. */
+    static async getOrdersByCustomerPhone(phoneQuery: string): Promise<{ customers: Customer[]; orders: Order[] }> {
+        const customers = await CustomerService.searchCustomersByPhone(phoneQuery, 50);
+        if (customers.length === 0) {
+            return { customers: [], orders: [] };
+        }
+        const customerIds = [...new Set(customers.map(c => c.id))];
+        const orders = await Order.find({
+            where: { customerId: In(customerIds), isActive: true },
+            relations: ['customer', 'branch', 'items', 'items.product', 'items.product.category', 'items.service'],
+            order: { createdAt: 'DESC' },
+        });
+        return { customers, orders };
+    }
+
+    /**
+     * Active orders with `deliveryDate` on a calendar day (server local midnight–end), excluding cancelled.
+     * Optionally scoped to one branch.
+     */
+    static async getDeliveryOrdersForCalendarDay(day: Date, branchId?: string): Promise<Order[]> {
+        const start = new Date(day);
         start.setHours(0, 0, 0, 0);
-        const end = new Date();
+        const end = new Date(day);
         end.setHours(23, 59, 59, 999);
 
         const trimmed = typeof branchId === 'string' ? branchId.trim() : '';
@@ -83,6 +102,11 @@ export class OrderService {
             relations: ['customer', 'branch', 'items', 'items.product', 'items.product.category', 'items.service'],
             order: { deliveryDate: 'ASC', createdAt: 'DESC' },
         });
+    }
+
+    /** Same as getDeliveryOrdersForCalendarDay for today (server local time). */
+    static async getTodayDeliveryOrders(branchId?: string): Promise<Order[]> {
+        return this.getDeliveryOrdersForCalendarDay(new Date(), branchId);
     }
 
     static async createOrder(data: CreateOrderInput): Promise<Order> {

@@ -3,7 +3,7 @@ import { OrderStatus, PaymentStatus } from '@entities/Order';
 import { OrderItemStatus } from '@entities/OrderItem';
 import { OrderService } from '@services/OrderService';
 import { NextFunction, Response } from 'express';
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 import { validateRequest } from '../helpers/validateRequest';
 import { BaseController } from './baseController';
@@ -39,6 +39,17 @@ export class OrderController extends BaseController {
                 return this.notFound(res, 'Order not found');
             }
             return this.ok(res, { order });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    public async searchOrdersByPhone(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
+        try {
+            await validateRequest(req, [query('phone').isString().trim().isLength({ min: 2 }).withMessage('phone query must be at least 2 characters')]);
+            const phone = String(req.query.phone).trim();
+            const { customers, orders } = await OrderService.getOrdersByCustomerPhone(phone);
+            return this.ok(res, { customers, orders });
         } catch (error) {
             next(error);
         }
