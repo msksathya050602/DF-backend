@@ -54,17 +54,32 @@ export class OperationsController extends BaseController {
                 param('id').isUUID().withMessage('Valid order ID is required'),
                 body('orderStatus').optional().isIn(Object.values(OrderStatus)).withMessage('Valid orderStatus is required'),
                 body('paymentStatus').optional().isIn(Object.values(PaymentStatus)).withMessage('Valid paymentStatus is required'),
-                body('handledBy').isString().withMessage('handledBy must be a valid user id'),
+                body('amountPaid').optional().isFloat({ gt: 0 }).withMessage('amountPaid must be a positive number'),
+                body('handledBy').optional().isString().withMessage('handledBy must be a string'),
             ]);
 
             const { orderStatus, paymentStatus, handledBy } = req.body as {
                 orderStatus?: OrderStatus;
                 paymentStatus?: PaymentStatus;
                 handledBy?: string;
+                amountPaid?: unknown;
             };
+
+            let amountPaid: number | undefined;
+            if (req.body?.amountPaid !== undefined && req.body?.amountPaid !== null && req.body?.amountPaid !== '') {
+                const n = Number(req.body.amountPaid);
+                if (Number.isNaN(n)) {
+                    return this.badRequest(res, 'amountPaid must be a number');
+                }
+                amountPaid = n;
+            }
 
             if (!orderStatus && !paymentStatus) {
                 return this.badRequest(res, 'At least one of orderStatus or paymentStatus is required');
+            }
+
+            if (paymentStatus === PaymentStatus.PARTIAL && amountPaid === undefined) {
+                return this.badRequest(res, 'amountPaid is required when payment status is PARTIAL');
             }
 
             if (orderStatus) {
@@ -75,14 +90,20 @@ export class OperationsController extends BaseController {
             }
 
             if (paymentStatus) {
-                const updatedOrder = await OrderService.updatePaymentStatus(req.params.id, paymentStatus);
-                if (!updatedOrder) {
-                    return this.notFound(res, 'Order not found');
+                try {
+                    const updatedOrder = await OrderService.updatePaymentStatus(req.params.id, paymentStatus, amountPaid);
+                    if (!updatedOrder) {
+                        return this.notFound(res, 'Order not found');
+                    }
+                } catch (err: unknown) {
+                    const msg = err instanceof Error ? err.message : 'Invalid payment update';
+                    return this.badRequest(res, msg);
                 }
             }
 
-            if (handledBy) {
-                const assigned = await OrderService.assignOrderHandler(req.params.id, handledBy);
+            const trimmedHandled = typeof handledBy === 'string' ? handledBy.trim() : '';
+            if (trimmedHandled) {
+                const assigned = await OrderService.assignOrderHandler(req.params.id, trimmedHandled);
                 if (!assigned) {
                     return this.notFound(res, 'Order not found');
                 }

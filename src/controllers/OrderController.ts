@@ -3,7 +3,7 @@ import { OrderStatus, PaymentStatus } from '@entities/Order';
 import { OrderItemStatus } from '@entities/OrderItem';
 import { OrderService } from '@services/OrderService';
 import { NextFunction, Response } from 'express';
-import { body, param, query } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import { validateRequest } from '../helpers/validateRequest';
 import { BaseController } from './baseController';
@@ -44,12 +44,63 @@ export class OrderController extends BaseController {
         }
     }
 
-    public async searchOrdersByPhone(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
+    /** GET /orders/search?phone=… | ?name=… — exactly one of phone or name (min 2 chars / 2 digits). */
+    public async searchOrders(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
-            await validateRequest(req, [query('phone').isString().trim().isLength({ min: 2 }).withMessage('phone query must be at least 2 characters')]);
-            const phone = String(req.query.phone).trim();
-            const { customers, orders } = await OrderService.getOrdersByCustomerPhone(phone);
-            return this.ok(res, { customers, orders });
+            const rawPhone = req.query.phone != null ? String(req.query.phone).trim() : '';
+            const rawName = req.query.name != null ? String(req.query.name).trim() : '';
+            const hasPhoneParam = rawPhone.length > 0;
+            const hasNameParam = rawName.length > 0;
+
+            if (hasPhoneParam && hasNameParam) {
+                return this.badRequest(res, 'Provide either phone or name, not both');
+            }
+            if (!hasPhoneParam && !hasNameParam) {
+                return this.badRequest(res, 'Provide phone (2+ digits) or name (2+ characters)');
+            }
+
+            if (hasPhoneParam) {
+                const digits = rawPhone.replace(/\D/g, '');
+                if (digits.length < 2) {
+                    return this.badRequest(res, 'phone query must match at least 2 digits');
+                }
+                const { customers, orders } = await OrderService.getOrdersByCustomerPhone(rawPhone);
+                const balanceMap = OrderService.sumOutstandingBalanceByCustomer(
+                    customers.map(c => c.id),
+                    orders,
+                );
+                const customersPayload = customers.map(c => ({
+                    id: c.id,
+                    firstName: c.firstName,
+                    lastName: c.lastName,
+                    customerPhone: c.customerPhone,
+                    customerEmail: c.customerEmail,
+                    customerAddress: c.customerAddress,
+                    isActive: c.isActive,
+                    outstandingBalance: balanceMap.get(c.id) ?? 0,
+                }));
+                return this.ok(res, { customers: customersPayload, orders });
+            }
+
+            if (rawName.length < 2) {
+                return this.badRequest(res, 'name query must be at least 2 characters');
+            }
+            const { customers, orders } = await OrderService.getOrdersByCustomerName(rawName);
+            const balanceMap = OrderService.sumOutstandingBalanceByCustomer(
+                customers.map(c => c.id),
+                orders,
+            );
+            const customersPayload = customers.map(c => ({
+                id: c.id,
+                firstName: c.firstName,
+                lastName: c.lastName,
+                customerPhone: c.customerPhone,
+                customerEmail: c.customerEmail,
+                customerAddress: c.customerAddress,
+                isActive: c.isActive,
+                outstandingBalance: balanceMap.get(c.id) ?? 0,
+            }));
+            return this.ok(res, { customers: customersPayload, orders });
         } catch (error) {
             next(error);
         }
@@ -98,16 +149,33 @@ export class OrderController extends BaseController {
 
     public async updatePaymentStatus(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
-            await validateRequest(req, [param('id').isUUID().withMessage('Valid order ID is required')]);
-            const { paymentStatus } = req.body as { paymentStatus?: PaymentStatus };
-            if (!paymentStatus || !Object.values(PaymentStatus).includes(paymentStatus)) {
-                return this.badRequest(res, 'Valid paymentStatus is required');
+            await validateRequest(req, [
+                param('id').isUUID().withMessage('Valid order ID is required'),
+                body('paymentStatus').isIn(Object.values(PaymentStatus)).withMessage('Valid paymentStatus is required'),
+                body('amountPaid').optional().isFloat({ gt: 0 }).withMessage('amountPaid must be a positive number'),
+            ]);
+            const { paymentStatus } = req.body as { paymentStatus: PaymentStatus; amountPaid?: unknown };
+            let amountPaid: number | undefined;
+            if (req.body?.amountPaid !== undefined && req.body?.amountPaid !== null && req.body?.amountPaid !== '') {
+                const n = Number(req.body.amountPaid);
+                if (Number.isNaN(n)) {
+                    return this.badRequest(res, 'amountPaid must be a number');
+                }
+                amountPaid = n;
             }
-            const order = await OrderService.updatePaymentStatus(req.params.id, paymentStatus);
-            if (!order) {
-                return this.notFound(res, 'Order not found');
+            if (paymentStatus === PaymentStatus.PARTIAL && amountPaid === undefined) {
+                return this.badRequest(res, 'amountPaid is required when payment status is PARTIAL');
             }
-            return this.ok(res, { order });
+            try {
+                const order = await OrderService.updatePaymentStatus(req.params.id, paymentStatus, amountPaid);
+                if (!order) {
+                    return this.notFound(res, 'Order not found');
+                }
+                return this.ok(res, { order });
+            } catch (err: unknown) {
+                const msg = err instanceof Error ? err.message : 'Invalid payment update';
+                return this.badRequest(res, msg);
+            }
         } catch (error) {
             next(error);
         }

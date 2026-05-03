@@ -2,7 +2,7 @@ import { CustomRequest } from '@customTypes/customRequest';
 import { CustomerService } from '@services/CustomerService';
 import { OrderService } from '@services/OrderService';
 import { NextFunction, Response } from 'express';
-import { body, param, query } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import { validateRequest } from '../helpers/validateRequest';
 import { BaseController } from './baseController';
@@ -82,15 +82,43 @@ export class CustomerController extends BaseController {
         }
     }
 
-    public async searchCustomersByPhone(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
+    /** GET /customers/search?phone=… | ?name=… — exactly one of phone or name (cached-friendly for autocomplete). */
+    public async searchCustomers(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
         try {
-            await validateRequest(req, [
-                query('phone').isString().trim().isLength({ min: 2 }).withMessage('Phone must be at least 2 digits'),
-                query('limit').optional().isInt({ min: 1, max: 20 }).withMessage('Limit must be between 1 and 20'),
-            ]);
-            const phone = String(req.query.phone).trim();
-            const limit = req.query.limit ? Number(req.query.limit) : 10;
-            const customers = await CustomerService.searchCustomersByPhone(phone, limit);
+            const rawPhone = req.query.phone != null ? String(req.query.phone).trim() : '';
+            const rawName = req.query.name != null ? String(req.query.name).trim() : '';
+            const hasPhone = rawPhone.length > 0;
+            const hasName = rawName.length > 0;
+
+            if (hasPhone && hasName) {
+                return this.badRequest(res, 'Provide either phone or name, not both');
+            }
+            if (!hasPhone && !hasName) {
+                return this.badRequest(res, 'Provide phone (2+ digits) or name (2+ characters)');
+            }
+
+            let limit = 10;
+            if (req.query.limit != null && req.query.limit !== '') {
+                const n = Number(req.query.limit);
+                if (!Number.isFinite(n) || n < 1 || n > 50) {
+                    return this.badRequest(res, 'limit must be between 1 and 50');
+                }
+                limit = Math.floor(n);
+            }
+
+            if (hasPhone) {
+                const digits = rawPhone.replace(/\D/g, '');
+                if (digits.length < 2) {
+                    return this.badRequest(res, 'Phone query must match at least 2 digits');
+                }
+                const customers = await CustomerService.searchCustomersByPhone(rawPhone, Math.min(limit, 20));
+                return this.ok(res, { customers, count: customers.length });
+            }
+
+            if (rawName.length < 2) {
+                return this.badRequest(res, 'Name query must be at least 2 characters');
+            }
+            const customers = await CustomerService.searchCustomersByName(rawName, Math.min(limit, 50));
             return this.ok(res, { customers, count: customers.length });
         } catch (error) {
             next(error);

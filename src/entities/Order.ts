@@ -53,6 +53,10 @@ export class Order extends BaseEntity {
     @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
     totalAmount!: number;
 
+    /** Amount collected toward the order; required semantically when `paymentStatus` is PARTIAL; equals total when PAID. */
+    @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+    amountPaid?: number | null;
+
     @Column({ type: 'timestamp', nullable: true })
     pickupDate?: Date;
 

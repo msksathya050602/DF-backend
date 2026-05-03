@@ -9,7 +9,7 @@ export default (route: Router) => {
     const customerController = CustomerController.initialize();
     const getAllCustomers = customerController.getAllCustomers.bind(customerController);
     const getCustomerById = customerController.getCustomerById.bind(customerController);
-    const searchCustomersByPhone = customerController.searchCustomersByPhone.bind(customerController);
+    const searchCustomers = customerController.searchCustomers.bind(customerController);
     const getCustomerOrders = customerController.getCustomerOrders.bind(customerController);
     const createCustomer = customerController.createCustomer.bind(customerController);
 
@@ -24,8 +24,8 @@ export default (route: Router) => {
         {
             method: 'get',
             path: '/customers/search',
-            action: searchCustomersByPhone,
-            description: 'Search customers by phone (autocomplete)',
+            action: searchCustomers,
+            description: 'Search customers by phone or name (autocomplete)',
             roles: ['user', 'admin'],
         },
         {

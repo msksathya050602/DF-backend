@@ -32,6 +32,27 @@ export type CreateOrderInput = {
 
 const round2 = (value: number | string | undefined | null): number => Number(Number(value ?? 0).toFixed(2));
 
+/** Remaining amount the customer owes on this order (excludes cancelled orders). */
+export function orderBalanceDue(order: Order): number {
+    const total = round2(order.totalAmount);
+    if (order.orderStatus === OrderStatus.CANCELLED) {
+        return 0;
+    }
+    switch (order.paymentStatus) {
+        case PaymentStatus.PAID:
+        case PaymentStatus.REFUNDED:
+            return 0;
+        case PaymentStatus.PENDING:
+            return total;
+        case PaymentStatus.PARTIAL: {
+            const paid = order.amountPaid != null ? round2(order.amountPaid) : 0;
+            return Math.max(0, round2(total - paid));
+        }
+        default:
+            return total;
+    }
+}
+
 const generateOrderNumber = () => {
     const now = new Date();
     const y = now.getFullYear();
@@ -42,6 +63,21 @@ const generateOrderNumber = () => {
 };
 
 export class OrderService {
+    /** Sum {@link orderBalanceDue} per customer for the given order list (e.g. search results). */
+    static sumOutstandingBalanceByCustomer(customerIds: string[], orders: Order[]): Map<string, number> {
+        const idSet = new Set(customerIds);
+        const map = new Map<string, number>();
+        for (const id of customerIds) {
+            map.set(id, 0);
+        }
+        for (const o of orders) {
+            if (!idSet.has(o.customerId)) continue;
+            const due = orderBalanceDue(o);
+            map.set(o.customerId, round2((map.get(o.customerId) ?? 0) + due));
+        }
+        return map;
+    }
+
     static async getAllOrders(): Promise<Order[]> {
         return Order.find({
             where: { isActive: true },
@@ -68,6 +104,21 @@ export class OrderService {
     /** Match customers by phone substring (digits), then return those customers and all their active orders. */
     static async getOrdersByCustomerPhone(phoneQuery: string): Promise<{ customers: Customer[]; orders: Order[] }> {
         const customers = await CustomerService.searchCustomersByPhone(phoneQuery, 50);
+        if (customers.length === 0) {
+            return { customers: [], orders: [] };
+        }
+        const customerIds = [...new Set(customers.map(c => c.id))];
+        const orders = await Order.find({
+            where: { customerId: In(customerIds), isActive: true },
+            relations: ['customer', 'branch', 'items', 'items.product', 'items.product.category', 'items.service'],
+            order: { createdAt: 'DESC' },
+        });
+        return { customers, orders };
+    }
+
+    /** Match customers by name substring, then return those customers and all their active orders. */
+    static async getOrdersByCustomerName(nameQuery: string): Promise<{ customers: Customer[]; orders: Order[] }> {
+        const customers = await CustomerService.searchCustomersByName(nameQuery, 50);
         if (customers.length === 0) {
             return { customers: [], orders: [] };
         }
@@ -208,10 +259,32 @@ export class OrderService {
         return this.getOrderById(id);
     }
 
-    static async updatePaymentStatus(id: string, paymentStatus: PaymentStatus): Promise<Order | null> {
+    static async updatePaymentStatus(id: string, paymentStatus: PaymentStatus, amountPaid?: number | null): Promise<Order | null> {
         const order = await this.getOrderById(id);
         if (!order) return null;
-        order.paymentStatus = paymentStatus;
+        const total = round2(order.totalAmount);
+
+        if (paymentStatus === PaymentStatus.PARTIAL) {
+            if (amountPaid === undefined || amountPaid === null || Number.isNaN(Number(amountPaid))) {
+                throw new Error('amountPaid is required when payment status is PARTIAL');
+            }
+            const ap = round2(Number(amountPaid));
+            if (ap <= 0 || ap >= total) {
+                throw new Error('amountPaid must be greater than 0 and less than the order total');
+            }
+            order.paymentStatus = PaymentStatus.PARTIAL;
+            order.amountPaid = ap;
+        } else if (paymentStatus === PaymentStatus.PAID) {
+            order.paymentStatus = PaymentStatus.PAID;
+            order.amountPaid = total;
+        } else if (paymentStatus === PaymentStatus.PENDING) {
+            order.paymentStatus = PaymentStatus.PENDING;
+            order.amountPaid = null;
+        } else if (paymentStatus === PaymentStatus.REFUNDED) {
+            order.paymentStatus = PaymentStatus.REFUNDED;
+            order.amountPaid = null;
+        }
+
         await order.save();
         return this.getOrderById(id);
     }

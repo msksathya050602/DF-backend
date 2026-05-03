@@ -8,7 +8,7 @@ import { Router } from 'express';
 export default (route: Router) => {
     const orderController = OrderController.initialize();
     const getAllOrders = orderController.getAllOrders.bind(orderController);
-    const searchOrdersByPhone = orderController.searchOrdersByPhone.bind(orderController);
+    const searchOrders = orderController.searchOrders.bind(orderController);
     const getOrderById = orderController.getOrderById.bind(orderController);
     const createOrder = orderController.createOrder.bind(orderController);
     const updateOrderStatus = orderController.updateOrderStatus.bind(orderController);
@@ -27,8 +27,8 @@ export default (route: Router) => {
         {
             method: 'get',
             path: '/orders/search',
-            action: searchOrdersByPhone,
-            description: 'Search orders by customer phone',
+            action: searchOrders,
+            description: 'Search orders by customer phone or customer name',
             roles: [],
         },
         {

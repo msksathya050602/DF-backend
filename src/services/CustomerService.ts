@@ -1,4 +1,4 @@
-import { Like } from 'typeorm';
+import { Brackets, Like } from 'typeorm';
 
 import { Customer } from '@/entities/Customer';
 
@@ -56,5 +56,33 @@ export class CustomerService {
             order: { createdAt: 'DESC' },
             take: limit,
         });
+    }
+
+    /**
+     * Match active customers whose full name or first/last name contains the query (case-insensitive).
+     * Strips LIKE wildcards from the query to avoid pattern injection.
+     */
+    static async searchCustomersByName(nameQuery: string, limit = 50): Promise<Customer[]> {
+        const trimmed = nameQuery.trim();
+        if (trimmed.length < 2) {
+            return [];
+        }
+        const sane = trimmed.replace(/[%_\\]/g, '');
+        if (sane.length < 2) {
+            return [];
+        }
+        const pattern = `%${sane}%`;
+        return Customer.createQueryBuilder('c')
+            .where('c.isActive = :active', { active: true })
+            .andWhere(
+                new Brackets(qb => {
+                    qb.where("CONCAT(TRIM(COALESCE(c.firstName, '')), ' ', TRIM(COALESCE(c.lastName, ''))) ILIKE :pattern", { pattern })
+                        .orWhere('c.firstName ILIKE :pattern', { pattern })
+                        .orWhere('c.lastName ILIKE :pattern', { pattern });
+                }),
+            )
+            .orderBy('c.createdAt', 'DESC')
+            .take(limit)
+            .getMany();
     }
 }
